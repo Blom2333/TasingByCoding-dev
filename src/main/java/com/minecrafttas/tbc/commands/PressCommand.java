@@ -19,11 +19,12 @@ public class PressCommand {
     public static int index = 0;
     public static List<String> pressingList = new ArrayList<>();
     public static List<List<String>> pressingQueue = new ArrayList<>();
+    public static List<List<Float>> rotationQueue = new ArrayList<>();
 
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher){
         commandDispatcher.register(Commands.literal("press")
                 .then(Commands.argument("duration", TimeArgument.time())
-                .executes(context -> setDuration(context, IntegerArgumentType.getInteger(context, "duration")))
+                .executes(context -> pressKeys(context, "", IntegerArgumentType.getInteger(context, "duration")))
                 .then(Commands.argument("keys", StringArgumentType.string())
                 .executes(context -> pressKeys(context, StringArgumentType.getString(context, "keys"), IntegerArgumentType.getInteger(context, "duration")))
                 .then(Commands.argument("serverRotation", RotationArgument.rotation())
@@ -31,13 +32,8 @@ public class PressCommand {
                 )));
     }
 
-    private static int setDuration(CommandContext<CommandSourceStack> context, Integer time) {
-        index += time;
-        return 1;
-    }
-
     private static int pressKeys(CommandContext<CommandSourceStack> context, String keys, Integer time) {
-        setDuration(context, time);
+        index += time;
         pressingList.clear();
         pressingList.addAll(Arrays.asList(keys.split("")));
         for (int i = 0; i < time; i++) pressingQueue.add(new ArrayList<>(pressingList));
@@ -45,9 +41,8 @@ public class PressCommand {
     }
 
     private static int serverRotate(CommandContext<CommandSourceStack> context, Coordinates rotation) {
-
         pressKeys(context, StringArgumentType.getString(context, "keys"), IntegerArgumentType.getInteger(context, "duration"));
-        sendChatMessage(context, "Rotated to " + rotation.getRotation(context.getSource()).x + " "  + rotation.getRotation(context.getSource()).y);
+        sendChatMessage(context, "Rotated to " + rotation.getRotation(context.getSource()).x + " " + rotation.getRotation(context.getSource()).y);
         return 1;
     }
 
