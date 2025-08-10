@@ -1,0 +1,3 @@
+src/main/java/com/mag/queuemod/core/Trades.java merge=ours
+gradle.properties merge=ours
+src/main/resources/fabric.mod.json merge=ours
