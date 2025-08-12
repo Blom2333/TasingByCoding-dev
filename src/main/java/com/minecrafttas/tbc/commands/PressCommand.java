@@ -19,30 +19,37 @@ public class PressCommand {
     public static int index = 0;
     public static List<String> pressingList = new ArrayList<>();
     public static List<List<String>> pressingQueue = new ArrayList<>();
-    public static List<List<Float>> rotationQueue = new ArrayList<>();
+    public static List<Float> rotList = new ArrayList<>();
+    public static List<List<Float>> rotQueue = new ArrayList<>();
 
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher){
         commandDispatcher.register(Commands.literal("press")
                 .then(Commands.argument("duration", TimeArgument.time())
-                .executes(context -> pressKeys(context, "", IntegerArgumentType.getInteger(context, "duration")))
+                .executes(context -> pressKeys(context, "", IntegerArgumentType.getInteger(context, "duration"), false))
                 .then(Commands.argument("keys", StringArgumentType.string())
-                .executes(context -> pressKeys(context, StringArgumentType.getString(context, "keys"), IntegerArgumentType.getInteger(context, "duration")))
+                .executes(context -> pressKeys(context, StringArgumentType.getString(context, "keys"), IntegerArgumentType.getInteger(context, "duration"), false))
                 .then(Commands.argument("serverRotation", RotationArgument.rotation())
                 .executes(context -> serverRotate(context, RotationArgument.getRotation(context, "serverRotation"))))
                 )));
     }
 
-    private static int pressKeys(CommandContext<CommandSourceStack> context, String keys, Integer time) {
+    private static int pressKeys(CommandContext<CommandSourceStack> context, String keys, Integer time, boolean doRotate) {
         index += time;
         pressingList.clear();
         pressingList.addAll(Arrays.asList(keys.split("")));
-        for (int i = 0; i < time; i++) pressingQueue.add(new ArrayList<>(pressingList));
+        for (int i = 0; i < time; i++) {
+            pressingQueue.add(new ArrayList<>(pressingList));
+            if (!doRotate) rotList.clear();
+            rotQueue.add(new ArrayList<>(rotList));
+        }
         return 1;
     }
 
     private static int serverRotate(CommandContext<CommandSourceStack> context, Coordinates rotation) {
-        pressKeys(context, StringArgumentType.getString(context, "keys"), IntegerArgumentType.getInteger(context, "duration"));
-        sendChatMessage(context, "Rotated to " + rotation.getRotation(context.getSource()).x + " " + rotation.getRotation(context.getSource()).y);
+        rotList.clear();
+        rotList.add(rotation.getRotation(context.getSource()).x);
+        rotList.add(rotation.getRotation(context.getSource()).y);
+        pressKeys(context, StringArgumentType.getString(context, "keys"), IntegerArgumentType.getInteger(context, "duration"), true);
         return 1;
     }
 

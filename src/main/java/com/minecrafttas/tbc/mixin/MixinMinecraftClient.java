@@ -3,9 +3,10 @@ package com.minecrafttas.tbc.mixin;
 import com.minecrafttas.tbc.commands.PressCommand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.world.entity.player.Player;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -16,14 +17,14 @@ import java.util.List;
 public class MixinMinecraftClient {
     @Shadow private int rightClickDelay;
     @Shadow private boolean pause;
-    @Unique private final Options options = Minecraft.getInstance().options;
+    @Shadow @Final public Options options;
 
     @Inject(method = "handleKeybinds", at = @At(value = "HEAD"))
     private void injectKeybinds(CallbackInfo ci) {
 
-        if (PressCommand.index > 0 && !pause) {
+        //Minecraft.getInstance().player must not be null, just in case...
+        if (PressCommand.index > 0 && !pause && Minecraft.getInstance().player != null) {
             rightClickDelay = 0;
-
             List<String> currentKeys = PressCommand.pressingQueue.get(0);
             for (String key : currentKeys) {
                 switch (key) {
@@ -41,6 +42,11 @@ public class MixinMinecraftClient {
                 }
             }
             PressCommand.pressingQueue.remove(0);
+
+            Player player = Minecraft.getInstance().player;
+            List<Float> currentRot = PressCommand.rotQueue.get(0);
+            if (!currentRot.isEmpty()) player.moveTo(player.getX(), player.getY(), player.getZ(), currentRot.get(1), currentRot.get(0));
+            PressCommand.rotQueue.remove(0);
         }
     }
 
