@@ -36,9 +36,11 @@ public class MixinMinecraftClient {
                     case "R": options.keySprint.setDown(true); break;
                     case "J": options.keyJump.setDown(true); break;
                     case "P": options.keyUse.setDown(true); break;
-                    //case "O": Minecraft.getInstance().options.keyPickItem.setDown(true); break;
-                    //case "I": Minecraft.getInstance().options.keyAttack.setDown(true); break;
-                    //case "f": Minecraft.getInstance().options.keySwapOffhand.setDown(true); break;
+                    case "O": options.keyPickItem.setDown(true); break;
+                    case "I": options.keyAttack.setDown(true); break;
+                    case "f": options.keySwapOffhand.setDown(true); break;
+                    case "q": options.keyDrop.setDown(true); break;
+                    case "e": options.keyInventory.setDown(true); break;
                 }
             }
             PressCommand.pressingQueue.remove(0);
@@ -53,14 +55,19 @@ public class MixinMinecraftClient {
     @Inject(method = "tick", at = @At(value = "TAIL"))
     private void cancelKeyPressing(CallbackInfo ci) {
         if (PressCommand.index > 0) {
-            Minecraft.getInstance().options.keyUp.setDown(false);
-            Minecraft.getInstance().options.keyRight.setDown(false);
-            Minecraft.getInstance().options.keyDown.setDown(false);
-            Minecraft.getInstance().options.keyLeft.setDown(false);
-            Minecraft.getInstance().options.keyShift.setDown(false);
-            Minecraft.getInstance().options.keySprint.setDown(false);
-            Minecraft.getInstance().options.keyJump.setDown(false);
-            Minecraft.getInstance().options.keyUse.setDown(false);
+            options.keyUp.setDown(false);
+            options.keyRight.setDown(false);
+            options.keyDown.setDown(false);
+            options.keyLeft.setDown(false);
+            options.keyShift.setDown(false);
+            options.keySprint.setDown(false);
+            options.keyJump.setDown(false);
+            options.keyUse.setDown(false);
+            options.keyPickItem.setDown(false);
+            options.keyAttack.setDown(false);
+            options.keySwapOffhand.setDown(false);
+            options.keyDrop.setDown(false);
+            options.keyInventory.setDown(false);
             PressCommand.index--;
         }
     }
