@@ -17,6 +17,11 @@ public class TasCommand {
             .then(Commands.literal("run")
             .then(Commands.argument("command", MessageArgument.message())
             .executes(TasCommand::addCommand))));
+
+        commandDispatcher.register(Commands.literal("tas")
+            .requires(commandSourceStack -> commandSourceStack.hasPermission(2))
+            .then(Commands.literal("stop")
+            .executes(TasCommand::stopMacros)));
     }
 
     private static int addCommand(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -27,6 +32,11 @@ public class TasCommand {
                 Minecraft.getInstance().player.chat("/" + MessageArgument.getMessage(context, "command").getString());
             }
         }
+        return 1;
+    }
+
+    private static int stopMacros(CommandContext<CommandSourceStack> context) {
+        PressCommand.macroQueue.clear();
         return 1;
     }
 }

@@ -45,8 +45,13 @@ public class TBCMacro {
                     case "q": options.keyDrop.setDown(true); break;
                     case "e": options.keyInventory.setDown(true); break;
                 }
+
+                // special handling for left click
+                //if (key.equals("I")) {
+
+                //}
             }
-            if (serverRotX != null) player.moveTo(player.getX(), player.getY(), player.getZ(), serverRotX, serverRotY);
+            if (serverRotX != null) player.moveTo(player.getX(), player.getY(), player.getZ(), serverRotY, serverRotX);
             duration--;
         }
     }
