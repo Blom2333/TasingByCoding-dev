@@ -16,12 +16,14 @@ public class TasCommand {
             .requires(commandSourceStack -> commandSourceStack.hasPermission(2))
             .then(Commands.literal("run")
             .then(Commands.argument("command", MessageArgument.message())
-            .executes(TasCommand::addCommand))));
-
-        commandDispatcher.register(Commands.literal("tas")
-            .requires(commandSourceStack -> commandSourceStack.hasPermission(2))
+            .executes(TasCommand::addCommand)))
             .then(Commands.literal("stop")
             .executes(TasCommand::stopMacros)));
+
+        //commandDispatcher.register(Commands.literal("tas")
+        //    .requires(commandSourceStack -> commandSourceStack.hasPermission(2))
+        //    .then(Commands.literal("debug")
+        //    .executes(TasCommand::debug)));
     }
 
     private static int addCommand(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -39,4 +41,11 @@ public class TasCommand {
         PressCommand.macroQueue.clear();
         return 1;
     }
+
+    //private static int debug(CommandContext<CommandSourceStack> context) {
+    //    if (Minecraft.getInstance().player != null) {
+    //        Minecraft.getInstance().player.closeContainer();
+    //    }
+    //    return 1;
+    //}
 }

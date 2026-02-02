@@ -23,8 +23,7 @@ public class PressCommand {
             .then(Commands.argument("keys", StringArgumentType.string())
             .executes(context -> pressKeys(context, StringArgumentType.getString(context, "keys")))
             .then(Commands.argument("serverRotation", RotationArgument.rotation())
-            .executes(context -> pressKeys(context, StringArgumentType.getString(context, "keys"), RotationArgument.getRotation(context, "serverRotation"))))
-        )));
+            .executes(context -> pressKeys(context, StringArgumentType.getString(context, "keys"), RotationArgument.getRotation(context, "serverRotation")))))));
     }
 
     private static int pressKeys(CommandContext<CommandSourceStack> context, String keys) {

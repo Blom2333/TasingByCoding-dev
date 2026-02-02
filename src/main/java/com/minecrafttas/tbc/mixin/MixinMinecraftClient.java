@@ -18,7 +18,6 @@ public class MixinMinecraftClient {
 
     @Inject(method = "handleKeybinds", at = @At(value = "HEAD"))
     private void injectKeybinds(CallbackInfo ci) {
-        //Minecraft.getInstance().player must not be null, just in case...
         if (!PressCommand.macroQueue.isEmpty() && !pause && Minecraft.getInstance().player != null) {
             rightClickDelay = 0;
             PressCommand.macroQueue.get(0).runScript(options);
