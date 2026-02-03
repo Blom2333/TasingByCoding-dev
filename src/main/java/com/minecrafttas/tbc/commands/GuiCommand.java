@@ -1,12 +1,15 @@
 package com.minecrafttas.tbc.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
 
 public class GuiCommand {
 
@@ -28,7 +31,7 @@ public class GuiCommand {
 
         // SWAP
         .then(Commands.literal("swap")
-        .then(Commands.argument("hotbar", IntegerArgumentType.integer(0, 8))
+        .then(Commands.argument("slot", IntegerArgumentType.integer(0, 8))
         .executes(GuiCommand::swapOperation)))
 
         // CLONE
@@ -51,7 +54,9 @@ public class GuiCommand {
 
         // PICKUP_ALL
         .then(Commands.literal("pickupall")
-        .executes(GuiCommand::pickupAllOperation))));
+        .executes(context -> pickupAllOperation(context, false))
+        .then(Commands.argument("doQuickPick", BoolArgumentType.bool())
+        .executes(context -> pickupAllOperation(context, BoolArgumentType.getBool(context, "doQuickPick")))))));
     }
 
     public static int pickupOperation(CommandContext<CommandSourceStack> context, int button) {
@@ -90,16 +95,26 @@ public class GuiCommand {
         return 1;
     }
 
-    public static int pickupAllOperation(CommandContext<CommandSourceStack> context) {
-        sendGuiOperation(context, 0, ClickType.PICKUP);
-        sendGuiOperation(context, 0, ClickType.PICKUP_ALL);
+    public static int pickupAllOperation(CommandContext<CommandSourceStack> context, boolean doQuickPick) {
+        if (!doQuickPick) {
+            sendGuiOperation(context, 0, ClickType.PICKUP);
+            sendGuiOperation(context, 0, ClickType.PICKUP_ALL);
+        }// else {
+//            Minecraft mc = Minecraft.getInstance();
+//            if (mc.player != null && mc.gameMode != null) {
+//                for (Slot slot2 : mc.player.containerMenu.slots) {
+//                    if (slot2 == null || !slot2.mayPickup(mc.player) || !slot2.hasItem() || slot2.container != slot.container || !AbstractContainerMenu.canItemQuickReplace(slot2, mc.screen.lastQuickMoved, true)) continue;
+//                    mc.gameMode.handleInventoryMouseClick(mc.player.containerMenu.containerId, slot2.index, 0, ClickType.QUICK_MOVE, mc.player) ;
+//                }
+//            }
+//        }
         return 1;
     }
 
-    public static void sendGuiOperation(CommandContext<CommandSourceStack> context, int key, ClickType clickType) {
+    public static void sendGuiOperation(CommandContext<CommandSourceStack> context, int type, ClickType clickType) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.gameMode != null && mc.player != null) {
-            mc.gameMode.handleInventoryMouseClick(mc.player.containerMenu.containerId, IntegerArgumentType.getInteger(context, "slot"), key, clickType, mc.player);
+            mc.gameMode.handleInventoryMouseClick(mc.player.containerMenu.containerId, IntegerArgumentType.getInteger(context, "slot"), type, clickType, mc.player);
         }
     }
 }

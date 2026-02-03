@@ -1,6 +1,7 @@
 package com.minecrafttas.tbc.mixin;
 
 import com.minecrafttas.tbc.commands.PressCommand;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import org.spongepowered.asm.mixin.Final;
@@ -26,29 +27,23 @@ public class MixinMinecraftClient {
 
     @Inject(method = "tick", at = @At(value = "TAIL"))
     private void cancelKeyPressing(CallbackInfo ci) {
-        if (PressCommand.macroQueue.isEmpty()) return;
+        if (PressCommand.macroQueue.isEmpty() || Minecraft.getInstance().player == null) return;
 
-        options.keyUp.setDown(false);
-        options.keyRight.setDown(false);
-        options.keyDown.setDown(false);
-        options.keyLeft.setDown(false);
-        options.keyShift.setDown(false);
-        options.keySprint.setDown(false);
-        options.keyJump.setDown(false);
-        options.keyUse.setDown(false);
-        options.keyPickItem.setDown(false);
-        options.keyAttack.setDown(false);
-        options.keySwapOffhand.setDown(false);
-        options.keyDrop.setDown(false);
-        options.keyInventory.setDown(false);
+        for (KeyMapping key : options.keyMappings) key.setDown(false);
+        Minecraft.getInstance().player.closeContainer();
 
         if (PressCommand.macroQueue.get(0).getDuration() == 0) {
             for (String command : PressCommand.macroQueue.get(0).getRunningCommands()) {
-                if (Minecraft.getInstance().player != null) {
-                    Minecraft.getInstance().player.chat("/" + command);
-                }
+                Minecraft.getInstance().player.chat("/" + command);
             }
             PressCommand.macroQueue.remove(0);
         }
+    }
+
+    @Inject(method = "tick", at = @At(value = "HEAD"))
+    private void closeGui(CallbackInfo ci) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.screen == null || mc.screen.isPauseScreen() || PressCommand.macroQueue.isEmpty()) return;
+        mc.player.closeContainer();
     }
 }
