@@ -7,9 +7,9 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 
 public class GuiCommand {
 
@@ -31,7 +31,7 @@ public class GuiCommand {
 
         // SWAP
         .then(Commands.literal("swap")
-        .then(Commands.argument("slot", IntegerArgumentType.integer(0, 8))
+        .then(Commands.argument("slot", IntegerArgumentType.integer())
         .executes(GuiCommand::swapOperation)))
 
         // CLONE
@@ -80,7 +80,7 @@ public class GuiCommand {
     }
 
     public static int swapOperation(CommandContext<CommandSourceStack> context) {
-        int hotbarSlot = IntegerArgumentType.getInteger(context, "hotbar");
+        int hotbarSlot = IntegerArgumentType.getInteger(context, "slot");
         sendGuiOperation(context, hotbarSlot, ClickType.SWAP);
         return 1;
     }
@@ -99,15 +99,18 @@ public class GuiCommand {
         if (!doQuickPick) {
             sendGuiOperation(context, 0, ClickType.PICKUP);
             sendGuiOperation(context, 0, ClickType.PICKUP_ALL);
-        }// else {
-//            Minecraft mc = Minecraft.getInstance();
-//            if (mc.player != null && mc.gameMode != null) {
-//                for (Slot slot2 : mc.player.containerMenu.slots) {
-//                    if (slot2 == null || !slot2.mayPickup(mc.player) || !slot2.hasItem() || slot2.container != slot.container || !AbstractContainerMenu.canItemQuickReplace(slot2, mc.screen.lastQuickMoved, true)) continue;
-//                    mc.gameMode.handleInventoryMouseClick(mc.player.containerMenu.containerId, slot2.index, 0, ClickType.QUICK_MOVE, mc.player) ;
-//                }
-//            }
-//        }
+        } else {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null && mc.gameMode != null && mc.screen != null) {
+                Slot targetSlot = mc.player.containerMenu.slots.get(IntegerArgumentType.getInteger(context, "slot"));
+                Item targetItem = targetSlot.getItem().getItem();
+                for (Slot slot : mc.player.containerMenu.slots) {
+                    if (slot.getItem().getItem() == targetItem && slot.container == targetSlot.container) {
+                        mc.gameMode.handleInventoryMouseClick(mc.player.containerMenu.containerId, slot.index, 0, ClickType.QUICK_MOVE, mc.player);
+                    }
+                }
+            }
+        }
         return 1;
     }
 
