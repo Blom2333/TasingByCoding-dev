@@ -1,4 +1,4 @@
-package com.minecrafttas.tbc.mods;
+package com.minecrafttas.tbc.core;
 
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -8,14 +8,14 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 
-public class TBCMacro {
+public class TBCMacros {
     @Getter private int duration;
     private final String[] keys;
     private final Float serverRotX;
     private final Float serverRotY;
     @Getter private ArrayList<String> runningCommands = new ArrayList<>();
 
-    public TBCMacro(int duration, String keys, Float serverRotX, Float serverRotY) {
+    public TBCMacros(int duration, String keys, Float serverRotX, Float serverRotY) {
         this.duration = duration;
         this.keys = keys.split("");
         this.serverRotX = serverRotX;

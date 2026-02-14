@@ -1,0 +1,4 @@
+{
+  "commands.tbc.tas.rule.query": "Hello! I'm Chinese!",
+  "commands.tbc.tas.rule.set": "TAS Rule %s is now set to: %s"
+}

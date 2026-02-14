@@ -3,7 +3,7 @@
   "id": "tbc",
   "version": "${version}",
   "name": "TasingByCoding",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "A tool for making TAS by writing datapacks.",
   "authors": [
     "Blom"
   ],
