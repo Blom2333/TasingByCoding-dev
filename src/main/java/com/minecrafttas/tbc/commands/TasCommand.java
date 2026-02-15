@@ -1,7 +1,7 @@
 package com.minecrafttas.tbc.commands;
 
-import com.minecrafttas.tbc.core.KeyBindingMapper;
-import com.minecrafttas.tbc.core.TasRules;
+import com.minecrafttas.tbc.util.KeyBindingMapper;
+import com.minecrafttas.tbc.util.TasRules;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
@@ -13,6 +13,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.commands.arguments.ObjectiveArgument;
 import net.minecraft.network.chat.TranslatableComponent;
+
+import java.io.IOException;
 
 public class TasCommand {
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher) {
@@ -44,7 +46,7 @@ public class TasCommand {
             .executes(context -> setRule(context, rule))))));
     }
 
-    public static void iterateKeysViaReflection(CommandDispatcher<CommandSourceStack> commandDispatcher) {
+    private static void iterateKeysViaReflection(CommandDispatcher<CommandSourceStack> commandDispatcher) {
         try {
             java.lang.reflect.Field nameMapField =
                     InputConstants.Key.class.getDeclaredField("NAME_MAP");
@@ -70,13 +72,17 @@ public class TasCommand {
             .then(Commands.literal(key)
             .then(Commands.argument("command", MessageArgument.message())
             .executes(context -> {
-                KeyBindingMapper.addKeybinding(key, MessageArgument.getMessage(context, "command").getString());
+                try {
+                    KeyBindingMapper.addKeybinding(InputConstants.getKey(key).getValue(), MessageArgument.getMessage(context, "command").getString());
+                } catch (IOException e) {throw new RuntimeException(e);}
                 return 1;
             }))))
             .then(Commands.literal("unbind")
             .then(Commands.literal(key)
             .executes(context -> {
-                KeyBindingMapper.getBOUND_KEYS().remove(InputConstants.getKey(key).getValue());
+                try {
+                    KeyBindingMapper.removeKeybinding(InputConstants.getKey(key).getValue());
+                } catch (IOException e) {throw new RuntimeException(e);}
                 return 1;
             }))));
     }

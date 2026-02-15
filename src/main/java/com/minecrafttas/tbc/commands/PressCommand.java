@@ -1,6 +1,6 @@
 package com.minecrafttas.tbc.commands;
 
-import com.minecrafttas.tbc.core.TBCMacros;
+import com.minecrafttas.tbc.util.TBCMacros;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;

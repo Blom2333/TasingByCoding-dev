@@ -1,4 +1,4 @@
-package com.minecrafttas.tbc.core;
+package com.minecrafttas.tbc.util;
 
 import lombok.Getter;
 import lombok.Setter;
