@@ -1,8 +1,6 @@
 package com.minecrafttas.tbc.mixin;
 
-import com.minecrafttas.tbc.commands.GuiCommand;
-import com.minecrafttas.tbc.commands.PressCommand;
-import com.minecrafttas.tbc.commands.TasCommand;
+import com.minecrafttas.tbc.TasCommand;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -19,7 +17,5 @@ public abstract class MixinCommandRegistration {
     @Inject( at = @At("TAIL"), method = "<init>")
     private void injectCommandRegistration(Commands.CommandSelection commandSelection, CallbackInfo ci){
         TasCommand.register(dispatcher);
-        PressCommand.register(dispatcher);
-        GuiCommand.register(dispatcher);
     }
 }

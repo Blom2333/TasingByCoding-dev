@@ -1,4 +1,4 @@
-package com.minecrafttas.tbc.commands;
+package com.minecrafttas.tbc.core;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;

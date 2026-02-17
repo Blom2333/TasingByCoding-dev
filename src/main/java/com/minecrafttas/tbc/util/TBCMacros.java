@@ -9,6 +9,8 @@ import net.minecraft.world.entity.player.Player;
 import java.util.ArrayList;
 
 public class TBCMacros {
+    public static ArrayList<TBCMacros> macroQueue = new ArrayList<>();
+
     @Getter private int duration;
     private final String[] keys;
     private final Float serverRotX;
