@@ -12,7 +12,8 @@
     "requireAnnotations": true
   },
   "client": [
+    "MixinCamera",
     "MixinKeyboardHandler",
-    "MixinMinecraftClient",
+    "MixinMinecraftClient"
   ]
 }

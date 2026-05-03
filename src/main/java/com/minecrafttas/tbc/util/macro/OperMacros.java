@@ -1,27 +1,27 @@
-package com.minecrafttas.tbc.util;
+package com.minecrafttas.tbc.util.macro;
 
-import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec2;
 
 import java.util.ArrayList;
 
-public class TBCMacros {
-    public static ArrayList<TBCMacros> macroQueue = new ArrayList<>();
+public class OperMacros {
+    public static ArrayList<OperMacros> macroQueue = new ArrayList<>();
 
-    @Getter private int duration;
+    private int duration;
     private final String[] keys;
-    private final Float serverRotX;
-    private final Float serverRotY;
-    @Getter private ArrayList<String> runningCommands = new ArrayList<>();
+    private final Vec2 serverRot;
+    private final Vec2 clientRot;
+    private final ArrayList<String> runningCommands = new ArrayList<>();
 
-    public TBCMacros(int duration, String keys, Float serverRotX, Float serverRotY) {
+    public OperMacros(int duration, String keys, Vec2 serverRot, Vec2 clientRot) {
         this.duration = duration;
         this.keys = keys.split("");
-        this.serverRotX = serverRotX;
-        this.serverRotY = serverRotY;
+        this.serverRot = serverRot;
+        this.clientRot = clientRot;
     }
 
     public void addCommand(Component command) {
@@ -53,8 +53,17 @@ public class TBCMacros {
 
                 //}
             }
-            if (serverRotX != null) player.moveTo(player.getX(), player.getY(), player.getZ(), serverRotY, serverRotX);
+            if (serverRot != null) player.moveTo(player.getX(), player.getY(), player.getZ(), serverRot.y, serverRot.x);
             duration--;
+        }
+    }
+
+    public void onMacroEnd() {
+        if (duration == 0) {
+            for (String command : runningCommands) {
+                Minecraft.getInstance().player.chat("/" + command);
+            }
+            macroQueue.remove(0);
         }
     }
 }

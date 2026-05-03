@@ -1,6 +1,7 @@
 package com.minecrafttas.tbc.mixin;
 
-import com.minecrafttas.tbc.util.TBCMacros;
+import com.minecrafttas.tbc.util.macro.GuiMacros;
+import com.minecrafttas.tbc.util.macro.OperMacros;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -16,34 +17,43 @@ public class MixinMinecraftClient {
     @Shadow private int rightClickDelay;
     @Shadow private boolean pause;
     @Shadow @Final public Options options;
+    @Shadow private static Minecraft instance;
 
     @Inject(method = "handleKeybinds", at = @At(value = "HEAD"))
     private void injectKeybinds(CallbackInfo ci) {
-        if (!TBCMacros.macroQueue.isEmpty() && !pause && Minecraft.getInstance().player != null) {
+        if (!OperMacros.macroQueue.isEmpty() && !pause && instance.player != null) {
             rightClickDelay = 0;
-            TBCMacros.macroQueue.get(0).runScript(options);
+            OperMacros.macroQueue.get(0).runScript(options);
         }
     }
 
     @Inject(method = "tick", at = @At(value = "TAIL"))
     private void cancelKeyPressing(CallbackInfo ci) {
-        if (TBCMacros.macroQueue.isEmpty() || Minecraft.getInstance().player == null) return;
+        if (OperMacros.macroQueue.isEmpty() || instance.player == null) return;
 
         for (KeyMapping key : options.keyMappings) key.setDown(false);
-        Minecraft.getInstance().player.closeContainer();
-
-        if (TBCMacros.macroQueue.get(0).getDuration() == 0) {
-            for (String command : TBCMacros.macroQueue.get(0).getRunningCommands()) {
-                Minecraft.getInstance().player.chat("/" + command);
-            }
-            TBCMacros.macroQueue.remove(0);
-        }
+        OperMacros.macroQueue.get(0).onMacroEnd();
     }
 
     @Inject(method = "tick", at = @At(value = "HEAD"))
     private void closeGui(CallbackInfo ci) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.screen == null || mc.screen.isPauseScreen() || TBCMacros.macroQueue.isEmpty()) return;
-        mc.player.closeContainer();
+        if (OperMacros.macroQueue.isEmpty()) return;
+        if (instance.player == null || instance.screen == null || instance.screen.isPauseScreen()) return;
+
+        GuiMacros.closeDelay++;
+        if (GuiMacros.closeDelay > GuiMacros.defaultDelay) {
+            GuiMacros.runAllMacros(instance); // Force to clear all macros
+            instance.player.closeContainer();
+            GuiMacros.closeDelay = 0;
+        }
+    }
+
+    @Inject(method = "runTick", at = @At(value = "HEAD"))
+    private void renderInterpolation(boolean bl, CallbackInfo ci) {
+        if (instance.screen != null) {
+            if (!OperMacros.macroQueue.isEmpty() && !GuiMacros.macroQueue.isEmpty()) {
+                GuiMacros.whenGuiOpen(instance);
+            }
+        }
     }
 }

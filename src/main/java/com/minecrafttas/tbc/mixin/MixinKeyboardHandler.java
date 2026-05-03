@@ -21,7 +21,7 @@ public class MixinKeyboardHandler {
     @Inject(method = "keyPress", at = @At(value = "HEAD"))
     private void handleCommandKeybind(long l, int i, int j, int k, int m, CallbackInfo ci) {
         if (Minecraft.getInstance().player == null) return;
-        if (Minecraft.getInstance().screen instanceof  ChatScreen) return;  // optimization needed, for now it's just banned chat screen
+        if (Minecraft.getInstance().screen instanceof ChatScreen) return;  // optimization needed, for now it's just banned chat screen
         for (Map.Entry<Integer, ArrayList<String>> entry : KeyBindingMapper.BOUND_KEYS.entrySet()) {
             if (i != entry.getKey() || k == 1) continue;
             for (String command : entry.getValue()) {

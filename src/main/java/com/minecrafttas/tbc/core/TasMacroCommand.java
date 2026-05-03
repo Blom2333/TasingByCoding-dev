@@ -1,7 +1,9 @@
 package com.minecrafttas.tbc.core;
 
 import com.minecrafttas.tbc.TasCommand;
-import com.minecrafttas.tbc.util.TBCMacros;
+import com.minecrafttas.tbc.util.macro.GuiMacros;
+import com.minecrafttas.tbc.util.macro.OperMacros;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -14,6 +16,9 @@ import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.commands.arguments.TimeArgument;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
 import net.minecraft.commands.arguments.coordinates.RotationArgument;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 
 public class TasMacroCommand {
     private static final LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("macro");
@@ -36,13 +41,61 @@ public class TasMacroCommand {
             .then(Commands.argument("serverRotation", RotationArgument.rotation())
             .executes(context -> pressKeys(context,
                     StringArgumentType.getString(context, "keys"),
-                    RotationArgument.getRotation(context, "serverRotation"))
-        )))));
+                    RotationArgument.getRotation(context, "serverRotation")))
+            .then(Commands.argument("clientRotation", RotationArgument.rotation())
+            .executes(context -> pressKeys(context,
+                    StringArgumentType.getString(context, "keys"),
+                    RotationArgument.getRotation(context, "serverRotation"),
+                    RotationArgument.getRotation(context, "clientRotation"))))
+            ))));
     }
 
     private static void registerGui() {
-        // gui hasn't done yet so i will just keep the original class
-        builder.then(Commands.literal("gui"));
+        builder.then(Commands.literal("gui")
+            .then(Commands.argument("slot", IntegerArgumentType.integer())
+
+            // PICKUP
+            .then(Commands.literal("pick")
+            .executes(context -> GuiMacros.addGuiMacro(context, ClickType.PICKUP, 0))
+            .then(Commands.literal("leftclick")
+            .executes(context -> GuiMacros.addGuiMacro(context, ClickType.PICKUP, 0)))
+            .then(Commands.literal("rightclick")
+            .executes(context -> GuiMacros.addGuiMacro(context, ClickType.PICKUP, 1))))
+
+            // QUICK_MOVE
+            .then(Commands.literal("quickmove")
+            .executes(context -> GuiMacros.addGuiMacro(context, ClickType.QUICK_MOVE, 0)))
+
+            // SWAP
+            .then(Commands.literal("swap")
+                    .executes(context -> GuiMacros.addGuiMacro(context, ClickType.SWAP, 40))
+            .then(Commands.argument("slot", IntegerArgumentType.integer())
+            .executes(context -> GuiMacros.addGuiMacro(context, ClickType.SWAP, IntegerArgumentType.getInteger(context, "slot")))))
+
+            // CLONE
+            .then(Commands.literal("clone")
+            .executes(context -> GuiMacros.addGuiMacro(context, ClickType.CLONE, 0)))
+
+            // THROW
+            .then(Commands.literal("throw")
+            .executes(context -> GuiMacros.addGuiMacro(context, ClickType.THROW, 1))
+            .then(Commands.argument("times", IntegerArgumentType.integer(0))
+            .executes(context -> GuiMacros.addGuiMacro(context, ClickType.THROW, IntegerArgumentType.getInteger(context, "times")))))
+
+            // QUICK_CRAFT
+            .then(Commands.literal("drag")
+            .executes(context -> GuiMacros.addGuiMacro(context, ClickType.QUICK_CRAFT, 1))
+            .then(Commands.literal("start")
+            .executes(context -> GuiMacros.addGuiMacro(context, ClickType.QUICK_CRAFT, 0)))
+            .then(Commands.literal("end")
+            .executes(context -> GuiMacros.addGuiMacro(context, ClickType.QUICK_CRAFT, 2))))
+
+            // PICKUP_ALL
+            .then(Commands.literal("pickupall")
+            .executes(context -> pickupAllOperation(context, false))
+            .then(Commands.argument("doQuickPick", BoolArgumentType.bool())
+            .executes(context -> pickupAllOperation(context, BoolArgumentType.getBool(context, "doQuickPick"))
+        )))));
     }
 
     private static void registerRunCommand() {
@@ -57,18 +110,52 @@ public class TasMacroCommand {
     }
 
     private static int pressKeys(CommandContext<CommandSourceStack> context, String keys) {
-        TBCMacros.macroQueue.add(new TBCMacros(IntegerArgumentType.getInteger(context, "duration"), keys, null, null));
+        OperMacros.macroQueue.add(new OperMacros(IntegerArgumentType.getInteger(context, "duration"), keys, null, null));
         return 1;
     }
 
-    private static int pressKeys(CommandContext<CommandSourceStack> context, String keys, Coordinates rotation) {
-        TBCMacros.macroQueue.add(new TBCMacros(IntegerArgumentType.getInteger(context, "duration"), keys, rotation.getRotation(context.getSource()).x, rotation.getRotation(context.getSource()).y));
+    private static int pressKeys(CommandContext<CommandSourceStack> context, String keys, Coordinates serverRotation) {
+        OperMacros.macroQueue.add(new OperMacros(
+                IntegerArgumentType.getInteger(context, "duration"),
+                keys,
+                serverRotation.getRotation(context.getSource()),
+                null
+        ));
+        return 1;
+    }
+
+    private static int pressKeys(CommandContext<CommandSourceStack> context, String keys, Coordinates serverRotation, Coordinates clientRotation) {
+        OperMacros.macroQueue.add(new OperMacros(
+                IntegerArgumentType.getInteger(context, "duration"),
+                keys,
+                serverRotation.getRotation(context.getSource()),
+                clientRotation.getRotation(context.getSource())
+        ));
+        return 1;
+    }
+
+    public static int pickupAllOperation(CommandContext<CommandSourceStack> context, boolean doQuickPick) {
+        if (!doQuickPick) {
+            GuiMacros.addGuiMacro(context, ClickType.PICKUP, 0);
+            GuiMacros.addGuiMacro(context, ClickType.PICKUP_ALL, 0);
+        } else {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null && mc.gameMode != null && mc.screen != null) {
+                Slot targetSlot = mc.player.containerMenu.slots.get(IntegerArgumentType.getInteger(context, "slot"));
+                Item targetItem = targetSlot.getItem().getItem();
+                for (Slot slot : mc.player.containerMenu.slots) {
+                    if (slot.getItem().getItem() == targetItem && slot.container == targetSlot.container) {
+                        GuiMacros.addGuiMacro(slot.index, ClickType.QUICK_MOVE, 0);
+                    }
+                }
+            }
+        }
         return 1;
     }
 
     private static int addCommand(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        if (!TBCMacros.macroQueue.isEmpty()) {
-            TBCMacros.macroQueue.get(TBCMacros.macroQueue.size() - 1).addCommand(MessageArgument.getMessage(context, "command"));
+        if (!OperMacros.macroQueue.isEmpty()) {
+            OperMacros.macroQueue.get(OperMacros.macroQueue.size() - 1).addCommand(MessageArgument.getMessage(context, "command"));
         } else {
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance().player.chat("/" + MessageArgument.getMessage(context, "command").getString());
@@ -78,7 +165,7 @@ public class TasMacroCommand {
     }
 
     private static int stopMacros(CommandContext<CommandSourceStack> context) {
-        TBCMacros.macroQueue.clear();
+        OperMacros.macroQueue.clear();
         return 1;
     }
 }
