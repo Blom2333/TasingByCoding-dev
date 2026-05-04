@@ -110,27 +110,30 @@ public class TasMacroCommand {
     }
 
     private static int pressKeys(CommandContext<CommandSourceStack> context, String keys) {
-        OperMacros.macroQueue.add(new OperMacros(IntegerArgumentType.getInteger(context, "duration"), keys, null, null));
+        OperMacros macro = new OperMacros(IntegerArgumentType.getInteger(context, "duration"), keys, null, null);
+        OperMacros.macroQueue.add(macro);
+        if (OperMacros.macroQueue.size() == 1) {
+            macro.startRotate();
+        }
         return 1;
     }
 
     private static int pressKeys(CommandContext<CommandSourceStack> context, String keys, Coordinates serverRotation) {
-        OperMacros.macroQueue.add(new OperMacros(
-                IntegerArgumentType.getInteger(context, "duration"),
-                keys,
-                serverRotation.getRotation(context.getSource()),
-                null
-        ));
+        pressKeys(context, keys, serverRotation, serverRotation);
         return 1;
     }
 
     private static int pressKeys(CommandContext<CommandSourceStack> context, String keys, Coordinates serverRotation, Coordinates clientRotation) {
-        OperMacros.macroQueue.add(new OperMacros(
+        OperMacros macro = new OperMacros(
                 IntegerArgumentType.getInteger(context, "duration"),
                 keys,
                 serverRotation.getRotation(context.getSource()),
                 clientRotation.getRotation(context.getSource())
-        ));
+        );
+        OperMacros.macroQueue.add(macro);
+        if (OperMacros.macroQueue.size() == 1) {
+            macro.startRotate();
+        }
         return 1;
     }
 
