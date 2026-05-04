@@ -1,6 +1,7 @@
 package com.minecrafttas.tbc.util.macro;
 
 import lombok.Getter;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.network.chat.Component;
@@ -11,10 +12,10 @@ import java.util.ArrayList;
 
 public class OperMacros {
     public static ArrayList<OperMacros> macroQueue = new ArrayList<>();
-    public static int defaultDelay = 10;
+    public static int defaultDelay = 5;
     public static int lerpDelay = 0;
-    public static float lastXRot = 0.0f;
-    public static float lastYRot = 0.0f;
+    public static float lastPitchRot = 0.0f;
+    public static float lastYawRot = 0.0f;
 
     private int duration;
     private final String[] keys;
@@ -67,9 +68,10 @@ public class OperMacros {
 
         if (serverRot != null) player.moveTo(player.getX(), player.getY(), player.getZ(), serverRot.y, serverRot.x);
         if (clientRot != null) {
-            lastXRot = Minecraft.getInstance().gameRenderer.getMainCamera().getXRot();
-            lastYRot = Minecraft.getInstance().gameRenderer.getMainCamera().getYRot();
-            OperMacros.lerpDelay = 0;
+            Camera mainCamera = Minecraft.getInstance().gameRenderer.getMainCamera();
+            lastPitchRot = mainCamera.getXRot();
+            lastYawRot = (mainCamera.getYRot() + 180) % 360 - 180;
+            lerpDelay = 0;
         }
     }
 
@@ -86,22 +88,25 @@ public class OperMacros {
         }
     }
 
-    public static float smoothLerp(float a, float b, float t) {
-        float diff = a - b;
-        if (diff <= -180) {
-            a += 360;
-        } else if (diff > 180) {
-            b += 360;
+    public static float smoothLerp(float a, float b, float t, boolean adjustRotDirection) {
+        if (adjustRotDirection) {
+            float diff = a - b;
+            if (diff <= -180) {
+                a += 360;
+            } else if (diff > 180) {
+                b += 360;
+            }
         }
         return a + (b - a) * t * t * (3 - 2 * t);
     }
 
     public static Vec2 getAngleLerp() {
-        float t = (lerpDelay + Minecraft.getInstance().getFrameTime()) / defaultDelay;
         Vec2 clientRot = macroQueue.get(0).getClientRot();
+        if (lerpDelay == defaultDelay) return new Vec2(clientRot.x, clientRot.y);
+        float t = (lerpDelay + Minecraft.getInstance().getFrameTime()) / defaultDelay;
         return new Vec2(
-                smoothLerp(lastXRot, clientRot.x, t),
-                smoothLerp(lastYRot, clientRot.y, t)
+                smoothLerp(lastPitchRot, clientRot.x, t, false),
+                smoothLerp(lastYawRot, clientRot.y, t, true)
         );
     }
 }
