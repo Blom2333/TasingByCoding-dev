@@ -1,4 +1,4 @@
-package com.minecrafttas.tbc.mixin;
+package com.minecrafttas.tbc.mixin.oper;
 
 import com.minecrafttas.tbc.util.macro.OperMacros;
 import net.minecraft.client.Camera;
@@ -15,10 +15,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinCamera {
     @Shadow protected abstract void setRotation(float f, float g);
 
-    @Inject(method = "setup", at = @At(value = "TAIL"))
+    @Shadow
+    private float xRot;
+
+    @Shadow
+    private float yRot;
+
+    @Inject(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"))
     private void doLerpRotate(BlockGetter blockGetter, Entity entity, boolean bl, boolean bl2, float f, CallbackInfo ci) {
         if (!OperMacros.macroQueue.isEmpty()) {
             Vec2 rot = OperMacros.getAngleLerp();
+            if (rot == null) return;
             setRotation(rot.y, rot.x);
         }
     }

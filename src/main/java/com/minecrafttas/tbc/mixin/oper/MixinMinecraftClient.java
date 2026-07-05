@@ -1,4 +1,4 @@
-package com.minecrafttas.tbc.mixin;
+package com.minecrafttas.tbc.mixin.oper;
 
 import com.minecrafttas.tbc.util.macro.GuiMacros;
 import com.minecrafttas.tbc.util.macro.OperMacros;

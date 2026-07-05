@@ -1,4 +1,4 @@
-package com.minecrafttas.tbc.mixin;
+package com.minecrafttas.tbc.mixin.oper;
 
 import com.minecrafttas.tbc.util.KeyBindingMapper;
 import net.minecraft.client.KeyboardHandler;

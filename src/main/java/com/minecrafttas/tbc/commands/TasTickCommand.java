@@ -1,4 +1,4 @@
-package com.minecrafttas.tbc.core;
+package com.minecrafttas.tbc.commands;
 
 import com.minecrafttas.tbc.TasCommand;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;

@@ -1,9 +1,9 @@
 package com.minecrafttas.tbc;
 
-import com.minecrafttas.tbc.core.TasMacroCommand;
-import com.minecrafttas.tbc.core.TasRngCommand;
-import com.minecrafttas.tbc.core.TasSettingsCommand;
-import com.minecrafttas.tbc.core.TasTickCommand;
+import com.minecrafttas.tbc.commands.TasMacroCommand;
+import com.minecrafttas.tbc.commands.TasRngCommand;
+import com.minecrafttas.tbc.commands.TasBindCommand;
+import com.minecrafttas.tbc.commands.TasTickCommand;
 import com.minecrafttas.tbc.util.TasRules;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -22,7 +22,7 @@ public class TasCommand {
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher) {
         TasMacroCommand.register();
         TasRngCommand.register();
-        TasSettingsCommand.register();
+        TasBindCommand.register();
         TasTickCommand.register();
 
         TasRules[] rules = TasRules.values();

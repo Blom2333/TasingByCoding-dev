@@ -3,7 +3,8 @@
   "package": "com.minecrafttas.tbc.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinCommandRegistration"
+    "oper.MixinCommandRegistration",
+    "rng.MixinEntity"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -12,8 +13,9 @@
     "requireAnnotations": true
   },
   "client": [
-    "MixinCamera",
-    "MixinKeyboardHandler",
-    "MixinMinecraftClient"
+    "oper.MixinCamera",
+    "oper.MixinKeyboardHandler",
+    "oper.MixinMinecraftClient",
+    "settings.MixinInputConstants"
   ]
 }

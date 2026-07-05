@@ -5,6 +5,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec2;
 
@@ -14,8 +15,8 @@ public class OperMacros {
     public static ArrayList<OperMacros> macroQueue = new ArrayList<>();
     public static int defaultDelay = 5;
     public static int lerpDelay = 0;
-    public static float lastPitchRot = 0.0f;
-    public static float lastYawRot = 0.0f;
+    public static float lastPitchRot;
+    public static float lastYawRot;
 
     private int duration;
     private final String[] keys;
@@ -68,9 +69,9 @@ public class OperMacros {
 
         if (serverRot != null) player.moveTo(player.getX(), player.getY(), player.getZ(), serverRot.y, serverRot.x);
         if (clientRot != null) {
-            Camera mainCamera = Minecraft.getInstance().gameRenderer.getMainCamera();
-            lastPitchRot = mainCamera.getXRot();
-            lastYawRot = (mainCamera.getYRot() + 180) % 360 - 180;
+            Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+            lastPitchRot = camera.getXRot();
+            lastYawRot = (camera.getYRot() + 180) % 360 - 180;
             lerpDelay = 0;
         }
     }
@@ -97,11 +98,12 @@ public class OperMacros {
                 b += 360;
             }
         }
-        return a + (b - a) * t * t * (3 - 2 * t);
+        return (float) Mth.lerp(Mth.smoothstep(t), a, b);
     }
 
     public static Vec2 getAngleLerp() {
         Vec2 clientRot = macroQueue.get(0).getClientRot();
+        if (clientRot == null) return null;
         if (lerpDelay == defaultDelay) return new Vec2(clientRot.x, clientRot.y);
         float t = (lerpDelay + Minecraft.getInstance().getFrameTime()) / defaultDelay;
         return new Vec2(
