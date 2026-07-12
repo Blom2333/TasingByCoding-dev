@@ -33,6 +33,20 @@ public class OperMacros {
         KEY_CODES.put('I', opt.keyAttack);
         KEY_CODES.put('O', opt.keyPickItem);
         KEY_CODES.put('t', opt.keyChat);
+        KEY_CODES.put('T', opt.keyPlayerList);
+        KEY_CODES.put('/', opt.keyCommand);
+        KEY_CODES.put('@', opt.keyScreenshot);
+        KEY_CODES.put('%', opt.keyTogglePerspective);
+        KEY_CODES.put('C', opt.keySmoothCamera);
+        KEY_CODES.put('F', opt.keyFullscreen);
+        KEY_CODES.put('H', opt.keySpectatorOutlines);
+        KEY_CODES.put('l', opt.keyAdvancements);
+        // creative tab activator needed
+
+        // slots
+        for (char i = '1'; i <= '9'; i++) {
+            KEY_CODES.put(i, opt.keyHotbarSlots[i-'1']);
+        }
     }
 
     public static ArrayList<OperMacros> macroQueue = new ArrayList<>();
@@ -59,17 +73,10 @@ public class OperMacros {
     }
 
     public void runScript() {
-        for (char keyCode : keys) {
-            KeyMapping key = KEY_CODES.get(keyCode);
-            if (key != null) KeyMapping.click(((AccessKeyMapping) key).getKey());
-
-            // slot select
-//            else if (keyCode - '0' <= 9 && keyCode - '0' >= 1) {
-//            }
-        }
-
-
-
+       for (char keyCode : keys) {
+           KeyMapping key = KEY_CODES.get(keyCode);
+           if (key != null) KeyMapping.click(((AccessKeyMapping) key).getKey());
+       }
        if (lerpDelay < defaultDelay) lerpDelay++;
        duration--;
     }
