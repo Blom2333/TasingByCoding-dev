@@ -1,4 +1,4 @@
-package com.minecrafttas.tbc.util.macro;
+package com.minecrafttas.tbc.macro;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;

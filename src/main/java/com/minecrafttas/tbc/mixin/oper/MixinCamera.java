@@ -1,6 +1,6 @@
 package com.minecrafttas.tbc.mixin.oper;
 
-import com.minecrafttas.tbc.util.macro.OperMacros;
+import com.minecrafttas.tbc.macro.OperMacros;
 import net.minecraft.client.Camera;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;

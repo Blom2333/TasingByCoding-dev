@@ -1,7 +1,7 @@
 package com.minecrafttas.tbc.mixin.oper;
 
-import com.minecrafttas.tbc.util.macro.GuiMacros;
-import com.minecrafttas.tbc.util.macro.OperMacros;
+import com.minecrafttas.tbc.macro.GuiMacros;
+import com.minecrafttas.tbc.macro.OperMacros;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;

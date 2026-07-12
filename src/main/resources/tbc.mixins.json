@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "oper.MixinCommandRegistration",
-    "rng.MixinEntity"
+    "rng.MixinEntityRand",
+    "rng.MixinLevelRand"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -13,9 +14,10 @@
     "requireAnnotations": true
   },
   "client": [
+    "bind.MixinInputConstantsType",
     "oper.MixinCamera",
     "oper.MixinKeyboardHandler",
     "oper.MixinMinecraftClient",
-    "settings.MixinInputConstants"
+    "rng.MixinFontSetRand"
   ]
 }

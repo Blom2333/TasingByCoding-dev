@@ -1,4 +1,4 @@
-package com.minecrafttas.tbc.util.macro;
+package com.minecrafttas.tbc.macro;
 
 import lombok.Getter;
 import net.minecraft.client.Camera;

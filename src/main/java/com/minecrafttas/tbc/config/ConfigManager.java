@@ -1,4 +1,4 @@
-package com.minecrafttas.tbc.util.config;
+package com.minecrafttas.tbc.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

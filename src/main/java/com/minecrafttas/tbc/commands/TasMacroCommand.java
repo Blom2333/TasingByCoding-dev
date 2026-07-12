@@ -1,8 +1,8 @@
 package com.minecrafttas.tbc.commands;
 
 import com.minecrafttas.tbc.TasCommand;
-import com.minecrafttas.tbc.util.macro.GuiMacros;
-import com.minecrafttas.tbc.util.macro.OperMacros;
+import com.minecrafttas.tbc.macro.GuiMacros;
+import com.minecrafttas.tbc.macro.OperMacros;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
