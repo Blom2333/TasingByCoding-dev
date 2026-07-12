@@ -23,7 +23,7 @@ public class MixinMinecraftClient {
     private void injectKeybinds(CallbackInfo ci) {
         if (!OperMacros.macroQueue.isEmpty() && !pause && instance.player != null) {
             rightClickDelay = 0;
-            OperMacros.macroQueue.get(0).runScript(options);
+            OperMacros.macroQueue.get(0).runScript();
         }
     }
 
@@ -31,7 +31,7 @@ public class MixinMinecraftClient {
     private void cancelKeyPressing(CallbackInfo ci) {
         if (OperMacros.macroQueue.isEmpty() || instance.player == null) return;
 
-        for (KeyMapping key : options.keyMappings) key.setDown(false);
+        KeyMapping.releaseAll();
         OperMacros.macroQueue.get(0).onMacroEnd();
     }
 

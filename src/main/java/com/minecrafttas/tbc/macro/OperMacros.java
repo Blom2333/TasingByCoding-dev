@@ -1,7 +1,9 @@
 package com.minecrafttas.tbc.macro;
 
+import com.minecrafttas.tbc.mixin.oper.AccessKeyMapping;
 import lombok.Getter;
 import net.minecraft.client.Camera;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.network.chat.Component;
@@ -10,8 +12,29 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec2;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class OperMacros {
+    private static final HashMap<Character, KeyMapping> KEY_CODES = new HashMap<>();
+    static {
+        // optimization needed here
+        Options opt = Minecraft.getInstance().options;
+        KEY_CODES.put('w', opt.keyUp);
+        KEY_CODES.put('s', opt.keyDown);
+        KEY_CODES.put('a', opt.keyLeft);
+        KEY_CODES.put('d', opt.keyRight);
+        KEY_CODES.put('J', opt.keyJump);
+        KEY_CODES.put('S', opt.keyShift);
+        KEY_CODES.put('R', opt.keySprint);
+        KEY_CODES.put('e', opt.keyInventory);
+        KEY_CODES.put('f', opt.keySwapOffhand);
+        KEY_CODES.put('q', opt.keyDrop);
+        KEY_CODES.put('P', opt.keyUse);
+        KEY_CODES.put('I', opt.keyAttack);
+        KEY_CODES.put('O', opt.keyPickItem);
+        KEY_CODES.put('t', opt.keyChat);
+    }
+
     public static ArrayList<OperMacros> macroQueue = new ArrayList<>();
     public static int defaultDelay = 5;
     public static int lerpDelay = 0;
@@ -19,14 +42,14 @@ public class OperMacros {
     public static float lastYawRot;
 
     private int duration;
-    private final String[] keys;
+    private final char[] keys;
     private final Vec2 serverRot;
     @Getter private final Vec2 clientRot;
     private final ArrayList<String> runningCommands = new ArrayList<>();
 
     public OperMacros(int duration, String keys, Vec2 serverRot, Vec2 clientRot) {
         this.duration = duration;
-        this.keys = keys.split("");
+        this.keys = keys.toCharArray();
         this.serverRot = serverRot;
         this.clientRot = clientRot;
     }
@@ -35,29 +58,17 @@ public class OperMacros {
         runningCommands.add(command.getString());
     }
 
-    public void runScript(Options options) {
-       for (String key : keys) {
-           switch (key) {
-               case "w": options.keyUp.setDown(true); break;
-               case "d": options.keyRight.setDown(true); break;
-               case "s": options.keyDown.setDown(true); break;
-               case "a": options.keyLeft.setDown(true); break;
-               case "S": options.keyShift.setDown(true); break;
-               case "R": options.keySprint.setDown(true); break;
-               case "J": options.keyJump.setDown(true); break;
-               case "P": options.keyUse.setDown(true); break;
-               case "O": options.keyPickItem.setDown(true); break;
-               case "I": options.keyAttack.setDown(true); break;
-               case "f": options.keySwapOffhand.setDown(true); break;
-               case "q": options.keyDrop.setDown(true); break;
-               case "e": options.keyInventory.setDown(true); break;
-           }
+    public void runScript() {
+        for (char keyCode : keys) {
+            KeyMapping key = KEY_CODES.get(keyCode);
+            if (key != null) KeyMapping.click(((AccessKeyMapping) key).getKey());
 
-           // special handling for left click
-           //if (key.equals("I")) {
+            // slot select
+//            else if (keyCode - '0' <= 9 && keyCode - '0' >= 1) {
+//            }
+        }
 
-           //}
-       }
+
 
        if (lerpDelay < defaultDelay) lerpDelay++;
        duration--;
