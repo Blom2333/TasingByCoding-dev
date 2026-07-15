@@ -8,7 +8,8 @@ group = project.maven_group
 
 repositories {
     mavenCentral()
-    "https://maven.parchmentmc.org"
+    maven { url 'https://maven.parchmentmc.org' }
+    maven { url 'https://jitpack.io' }
     // Add repositories to retrieve artifacts from in here.
     // You should only use this when depending on other mods because
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
@@ -73,6 +74,10 @@ jar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId = project.maven_group
+            artifactId = project.archives_base_name
+            version = project.mod_version
+
             from components.java
         }
     }
@@ -83,5 +88,6 @@ publishing {
         // Notice: This block does NOT have the same function as the block in the top level.
         // The repositories here will be used for publishing your artifact, not for
         // retrieving dependencies.
+        mavenLocal()
     }
 }

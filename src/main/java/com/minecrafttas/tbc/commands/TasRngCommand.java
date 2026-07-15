@@ -1,7 +1,7 @@
 package com.minecrafttas.tbc.commands;
 
 import com.minecrafttas.tbc.TasCommand;
-import com.minecrafttas.tbc.rng.GlobalRandom;
+import com.minecrafttas.tbc.rng.RandomManager;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -50,13 +50,13 @@ public class TasRngCommand {
     }
 
     private static int lockRng(CommandContext<CommandSourceStack> context) {
-        GlobalRandom.setValue(IntegerArgumentType.getInteger(context, "value"));
-        GlobalRandom.setLocked(true);
+        RandomManager.setValue(IntegerArgumentType.getInteger(context, "value"));
+        RandomManager.setLocked(true);
         return 1;
     }
 
     private static int unlockRng() {
-        GlobalRandom.setLocked(false);
+        RandomManager.setLocked(false);
         return 1;
     }
 }

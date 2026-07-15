@@ -1,7 +1,7 @@
 package com.minecrafttas.tbc.mixin.rng;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.minecrafttas.tbc.rng.GlobalRandom;
+import com.minecrafttas.tbc.rng.RandomManager;
 import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +15,7 @@ import java.util.Random;
 public abstract class MixinFontSetRand {
     @Shadow public abstract BakedGlyph getGlyph(int i2);
 
-    @Unique private static final Random customRandom = new GlobalRandom();
+    @Unique private static final Random customRandom = new RandomManager();
 
     @ModifyExpressionValue(method = "getRandomGlyph", at = @At(value = "INVOKE", target = "Ljava/util/Random;nextInt(I)I"))
     private int replaceRandom(int original) {

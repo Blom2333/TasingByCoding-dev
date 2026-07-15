@@ -1,11 +1,11 @@
 package com.minecrafttas.tbc.commands;
 
 import com.minecrafttas.tbc.TasCommand;
+import com.minecrafttas.tbc.commands.arguments.KeyCodeArgument;
 import com.minecrafttas.tbc.macro.GuiMacros;
 import com.minecrafttas.tbc.macro.OperMacros;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -35,16 +35,16 @@ public class TasMacroCommand {
         builder.then(Commands.literal("press")
             .then(Commands.argument("duration", TimeArgument.time())
             .executes(context -> pressKeys(context, ""))
-            .then(Commands.argument("keys", StringArgumentType.string())
+            .then(Commands.argument("keys", KeyCodeArgument.keyCode())
             .executes(context -> pressKeys(context,
-                    StringArgumentType.getString(context, "keys")))
+                    KeyCodeArgument.getKeyCode(context, "keys")))
             .then(Commands.argument("serverRotation", RotationArgument.rotation())
             .executes(context -> pressKeys(context,
-                    StringArgumentType.getString(context, "keys"),
+                    KeyCodeArgument.getKeyCode(context, "keys"),
                     RotationArgument.getRotation(context, "serverRotation")))
             .then(Commands.argument("clientRotation", RotationArgument.rotation())
             .executes(context -> pressKeys(context,
-                    StringArgumentType.getString(context, "keys"),
+                    KeyCodeArgument.getKeyCode(context, "keys"),
                     RotationArgument.getRotation(context, "serverRotation"),
                     RotationArgument.getRotation(context, "clientRotation"))))
             ))));

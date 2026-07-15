@@ -14,7 +14,6 @@
     "requireAnnotations": true
   },
   "client": [
-    "bind.MixinInputConstantsType",
     "oper.AccessKeyMapping",
     "oper.MixinCamera",
     "oper.MixinKeyboardHandler",

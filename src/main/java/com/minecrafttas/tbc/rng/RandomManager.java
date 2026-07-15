@@ -4,9 +4,11 @@ import lombok.Setter;
 
 import java.util.Random;
 
-public class GlobalRandom extends Random {
+public class RandomManager extends Random {
+
     @Setter private static boolean locked = false;
     @Setter private static int value;
+
     private static int from;
     private static int to;
     private int time;

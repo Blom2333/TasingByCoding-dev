@@ -75,7 +75,10 @@ public class OperMacros {
     public void runScript() {
        for (char keyCode : keys) {
            KeyMapping key = KEY_CODES.get(keyCode);
-           if (key != null) KeyMapping.click(((AccessKeyMapping) key).getKey());
+           if (key != null) {
+               KeyMapping.click(((AccessKeyMapping) key).getKey());
+               key.setDown(true);
+           }
        }
        if (lerpDelay < defaultDelay) lerpDelay++;
        duration--;
