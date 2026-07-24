@@ -2,9 +2,9 @@ package com.minecrafttas.tbc.mixin.oper;
 
 import com.minecrafttas.tbc.macro.GuiMacros;
 import com.minecrafttas.tbc.macro.OperMacros;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.KeyBinding;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,12 +12,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Minecraft.class)
+@Mixin(MinecraftClient.class)
 public class MixinMinecraftClient {
     @Shadow private int rightClickDelay;
     @Shadow private boolean pause;
-    @Shadow @Final public Options options;
-    @Shadow private static Minecraft instance;
+    @Shadow @Final public GameOptions options;
+    @Shadow private static MinecraftClient instance;
 
     @Inject(method = "handleKeybinds", at = @At(value = "HEAD"))
     private void injectKeybinds(CallbackInfo ci) {
@@ -31,26 +31,26 @@ public class MixinMinecraftClient {
     private void cancelKeyPressing(CallbackInfo ci) {
         if (OperMacros.macroQueue.isEmpty() || instance.player == null) return;
 
-        KeyMapping.releaseAll();
+        KeyBinding.unpressAll();
         OperMacros.macroQueue.get(0).onMacroEnd();
     }
 
     @Inject(method = "tick", at = @At(value = "HEAD"))
     private void closeGui(CallbackInfo ci) {
         if (OperMacros.macroQueue.isEmpty()) return;
-        if (instance.player == null || instance.screen == null || instance.screen.isPauseScreen()) return;
+        if (instance.player == null || instance.currentScreen == null || instance.currentScreen.isPauseScreen()) return;
 
         GuiMacros.closeDelay++;
         if (GuiMacros.closeDelay > GuiMacros.defaultDelay) {
             GuiMacros.runAllMacros(instance); // Force to clear all macros
-            instance.player.closeContainer();
+            instance.player.closeHandledScreen();
             GuiMacros.closeDelay = 0;
         }
     }
 
     @Inject(method = "runTick", at = @At(value = "HEAD"))
     private void renderInterpolation(boolean bl, CallbackInfo ci) {
-        if (instance.screen != null) {
+        if (instance.currentScreen != null) {
             if (!OperMacros.macroQueue.isEmpty() && !GuiMacros.macroQueue.isEmpty()) {
                 GuiMacros.whenGuiOpen(instance);
             }

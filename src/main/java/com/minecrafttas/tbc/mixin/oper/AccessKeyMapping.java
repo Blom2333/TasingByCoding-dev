@@ -1,12 +1,11 @@
 package com.minecrafttas.tbc.mixin.oper;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.KeyMapping;
+import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(KeyMapping.class)
+@Mixin(KeyBinding.class)
 public interface AccessKeyMapping {
-    @Accessor
-    InputConstants.Key getKey();
+    @Accessor InputUtil.Key boundKey();
 }

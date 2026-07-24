@@ -2,32 +2,31 @@ package com.minecrafttas.tbc.macro;
 
 import com.minecrafttas.tbc.mixin.oper.AccessKeyMapping;
 import lombok.Getter;
-import net.minecraft.client.Camera;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec2;
-
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.render.Camera;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class OperMacros {
-    private static final HashMap<Character, KeyMapping> KEY_CODES = new HashMap<>();
+    private static final HashMap<Character, KeyBinding> KEY_CODES = new HashMap<>();
     static {
         // optimization needed here
-        Options opt = Minecraft.getInstance().options;
-        KEY_CODES.put('w', opt.keyUp);
-        KEY_CODES.put('s', opt.keyDown);
+        GameOptions opt = MinecraftClient.getInstance().options;
+        KEY_CODES.put('w', opt.keyForward);
+        KEY_CODES.put('s', opt.keyBack);
         KEY_CODES.put('a', opt.keyLeft);
         KEY_CODES.put('d', opt.keyRight);
         KEY_CODES.put('J', opt.keyJump);
-        KEY_CODES.put('S', opt.keyShift);
+        KEY_CODES.put('S', opt.keySneak);
         KEY_CODES.put('R', opt.keySprint);
         KEY_CODES.put('e', opt.keyInventory);
-        KEY_CODES.put('f', opt.keySwapOffhand);
+        KEY_CODES.put('f', opt.keySwapHands);
         KEY_CODES.put('q', opt.keyDrop);
         KEY_CODES.put('P', opt.keyUse);
         KEY_CODES.put('I', opt.keyAttack);
@@ -45,7 +44,7 @@ public class OperMacros {
 
         // slots
         for (char i = '1'; i <= '9'; i++) {
-            KEY_CODES.put(i, opt.keyHotbarSlots[i-'1']);
+            KEY_CODES.put(i, opt.keysHotbar[i-'1']);
         }
     }
 
@@ -57,27 +56,27 @@ public class OperMacros {
 
     private int duration;
     private final char[] keys;
-    private final Vec2 serverRot;
-    @Getter private final Vec2 clientRot;
+    private final Vec2f serverRot;
+    @Getter private final Vec2f clientRot;
     private final ArrayList<String> runningCommands = new ArrayList<>();
 
-    public OperMacros(int duration, String keys, Vec2 serverRot, Vec2 clientRot) {
+    public OperMacros(int duration, String keys, Vec2f serverRot, Vec2f clientRot) {
         this.duration = duration;
         this.keys = keys.toCharArray();
         this.serverRot = serverRot;
         this.clientRot = clientRot;
     }
 
-    public void addCommand(Component command) {
+    public void addCommand(Text command) {
         runningCommands.add(command.getString());
     }
 
     public void runScript() {
        for (char keyCode : keys) {
-           KeyMapping key = KEY_CODES.get(keyCode);
+           KeyBinding key = KEY_CODES.get(keyCode);
            if (key != null) {
-               KeyMapping.click(((AccessKeyMapping) key).getKey());
-               key.setDown(true);
+               KeyBinding.onKeyPressed(((AccessKeyMapping) key).boundKey());
+               key.setPressed(true);
            }
        }
        if (lerpDelay < defaultDelay) lerpDelay++;
@@ -85,14 +84,14 @@ public class OperMacros {
     }
 
     public void startRotate() {
-        Player player = Minecraft.getInstance().player;
+        PlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return;
 
-        if (serverRot != null) player.moveTo(player.getX(), player.getY(), player.getZ(), serverRot.y, serverRot.x);
+        if (serverRot != null) player.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), serverRot.y, serverRot.x);
         if (clientRot != null) {
-            Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-            lastPitchRot = camera.getXRot();
-            lastYawRot = (camera.getYRot() + 180) % 360 - 180;
+            Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+            lastPitchRot = camera.getPitch();
+            lastYawRot = (camera.getYaw() + 180) % 360 - 180;
             lerpDelay = 0;
         }
     }
@@ -100,7 +99,7 @@ public class OperMacros {
     public void onMacroEnd() {
         if (duration == 0) {
             for (String command : runningCommands) {
-                Minecraft.getInstance().player.chat("/" + command);
+                MinecraftClient.getInstance().player.sendChatMessage("/" + command);
             }
             macroQueue.remove(0);
 
@@ -119,15 +118,15 @@ public class OperMacros {
                 b += 360;
             }
         }
-        return (float) Mth.lerp(Mth.smoothstep(t), a, b);
+        return (float) MathHelper.lerp(MathHelper.perlinFade(t), a, b);
     }
 
-    public static Vec2 getAngleLerp() {
-        Vec2 clientRot = macroQueue.get(0).getClientRot();
+    public static Vec2f getAngleLerp() {
+        Vec2f clientRot = macroQueue.get(0).getClientRot();
         if (clientRot == null) return null;
-        if (lerpDelay == defaultDelay) return new Vec2(clientRot.x, clientRot.y);
-        float t = (lerpDelay + Minecraft.getInstance().getFrameTime()) / defaultDelay;
-        return new Vec2(
+        if (lerpDelay == defaultDelay) return new Vec2f(clientRot.x, clientRot.y);
+        float t = (lerpDelay + MinecraftClient.getInstance().getTickDelta()) / defaultDelay;
+        return new Vec2f(
                 smoothLerp(lastPitchRot, clientRot.x, t, false),
                 smoothLerp(lastYawRot, clientRot.y, t, true)
         );

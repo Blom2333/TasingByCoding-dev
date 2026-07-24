@@ -2,18 +2,18 @@ package com.minecrafttas.tbc.mixin.rng;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.minecrafttas.tbc.rng.RandomManager;
-import net.minecraft.client.gui.font.FontSet;
-import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.Random;
+import net.minecraft.client.font.FontStorage;
+import net.minecraft.client.font.GlyphRenderer;
 
-@Mixin(FontSet.class)
+@Mixin(FontStorage.class)
 public abstract class MixinFontSetRand {
-    @Shadow public abstract BakedGlyph getGlyph(int i2);
+    @Shadow public abstract GlyphRenderer getGlyph(int i2);
 
     @Unique private static final Random customRandom = new RandomManager();
 
