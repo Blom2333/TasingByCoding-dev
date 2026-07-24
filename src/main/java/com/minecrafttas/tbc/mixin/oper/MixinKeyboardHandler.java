@@ -18,12 +18,12 @@ import net.minecraft.client.gui.screen.ChatScreen;
  */
 @Mixin(Keyboard.class)
 public class MixinKeyboardHandler {
-    @Inject(method = "keyPress", at = @At(value = "HEAD"))
-    private void handleCommandKeybind(long l, int i, int j, int k, int m, CallbackInfo ci) {
+    @Inject(method = "onKey", at = @At(value = "HEAD"))
+    private void handleCommandKeybind(long window, int key, int scancode, int i, int j, CallbackInfo ci) {
         if (MinecraftClient.getInstance().player == null) return;
         if (MinecraftClient.getInstance().currentScreen instanceof ChatScreen) return;  // optimization needed, for now it's just banned chat screen
         for (Map.Entry<Integer, ArrayList<String>> entry : KeyBindingMapper.BOUND_KEYS.entrySet()) {
-            if (i != entry.getKey() || k == 1) continue;
+            if (key != entry.getKey() || i == 1) continue;
             for (String command : entry.getValue()) {
                 MinecraftClient.getInstance().player.sendChatMessage("/" + command);
             }

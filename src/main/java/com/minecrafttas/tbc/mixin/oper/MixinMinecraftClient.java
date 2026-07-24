@@ -14,15 +14,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftClient.class)
 public class MixinMinecraftClient {
-    @Shadow private int rightClickDelay;
-    @Shadow private boolean pause;
+    @Shadow private int itemUseCooldown;
+    @Shadow private boolean paused;
     @Shadow @Final public GameOptions options;
     @Shadow private static MinecraftClient instance;
 
-    @Inject(method = "handleKeybinds", at = @At(value = "HEAD"))
+    @Inject(method = "handleInputEvents", at = @At(value = "HEAD"))
     private void injectKeybinds(CallbackInfo ci) {
-        if (!OperMacros.macroQueue.isEmpty() && !pause && instance.player != null) {
-            rightClickDelay = 0;
+        if (!OperMacros.macroQueue.isEmpty() && !paused && instance.player != null) {
+            itemUseCooldown = 0;
             OperMacros.macroQueue.get(0).runScript();
         }
     }
@@ -48,8 +48,8 @@ public class MixinMinecraftClient {
         }
     }
 
-    @Inject(method = "runTick", at = @At(value = "HEAD"))
-    private void renderInterpolation(boolean bl, CallbackInfo ci) {
+    @Inject(method = "render", at = @At(value = "HEAD"))
+    private void renderInterpolation(boolean tick, CallbackInfo ci) {
         if (instance.currentScreen != null) {
             if (!OperMacros.macroQueue.isEmpty() && !GuiMacros.macroQueue.isEmpty()) {
                 GuiMacros.whenGuiOpen(instance);

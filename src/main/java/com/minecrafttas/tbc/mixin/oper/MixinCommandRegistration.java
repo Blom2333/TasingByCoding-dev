@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinCommandRegistration {
     @Shadow @Final private CommandDispatcher<ServerCommandSource> dispatcher;
     @Inject( at = @At("TAIL"), method = "<init>")
-    private void injectCommandRegistration(CommandManager.RegistrationEnvironment commandSelection, CallbackInfo ci){
+    private void injectCommandRegistration(CommandManager.RegistrationEnvironment environment, CallbackInfo ci){
         TasCommand.register(dispatcher);
     }
 }

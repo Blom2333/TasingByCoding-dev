@@ -13,11 +13,9 @@ import net.minecraft.client.font.GlyphRenderer;
 
 @Mixin(FontStorage.class)
 public abstract class MixinFontSetRand {
-    @Shadow public abstract GlyphRenderer getGlyph(int i2);
-
     @Unique private static final Random customRandom = new RandomManager();
 
-    @ModifyExpressionValue(method = "getRandomGlyph", at = @At(value = "INVOKE", target = "Ljava/util/Random;nextInt(I)I"))
+    @ModifyExpressionValue(method = "getObfuscatedGlyphRenderer", at = @At(value = "INVOKE", target = "Ljava/util/Random;nextInt(I)I"))
     private int replaceRandom(int original) {
         return customRandom.nextInt();
     }

@@ -75,7 +75,7 @@ public class OperMacros {
        for (char keyCode : keys) {
            KeyBinding key = KEY_CODES.get(keyCode);
            if (key != null) {
-               KeyBinding.onKeyPressed(((AccessKeyMapping) key).boundKey());
+               KeyBinding.onKeyPressed(((AccessKeyMapping) key).getBoundKey());
                key.setPressed(true);
            }
        }
