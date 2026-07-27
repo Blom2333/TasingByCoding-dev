@@ -11,7 +11,6 @@ import net.minecraft.text.LiteralText;
 
 public class TasRngCommand {
     private static final LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("rng");
-    public static int loadCount = 0;
 
     public static void register() {
         registerGlobal();

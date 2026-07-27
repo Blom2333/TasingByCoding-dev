@@ -34,12 +34,12 @@ public class TasCommand {
             .requires(commandSourceStack -> commandSourceStack.hasPermissionLevel(2))
             .then(CommandManager.literal("rule")
             .then(CommandManager.literal(rule.name)
-            .executes(context -> queryRule(context, rule))
+            .executes(TasCommand::queryRule)
             .then(CommandManager.argument("value", ObjectiveArgumentType.objective())
             .executes(context -> setRule(context, rule))))));
     }
 
-    private static int queryRule(CommandContext<ServerCommandSource> context, TasRules rule) {
+    private static int queryRule(CommandContext<ServerCommandSource> context) {
         context.getSource().sendFeedback(new TranslatableText("commands.tbc.tas.rule.query"), false);
         return 1;
     }

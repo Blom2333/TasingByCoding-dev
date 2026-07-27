@@ -40,7 +40,7 @@ public class OperMacros {
         KEY_CODES.put('F', opt.keyFullscreen);
         KEY_CODES.put('H', opt.keySpectatorOutlines);
         KEY_CODES.put('l', opt.keyAdvancements);
-        // creative tab activator needed
+        // creative tab activator needed, but idk what character to use
 
         // slots
         for (char i = '1'; i <= '9'; i++) {

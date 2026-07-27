@@ -4,8 +4,21 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "oper.MixinCommandRegistration",
+    "rng.MixinDispenserRand",
+    "rng.MixinEnchantingTableRand",
     "rng.MixinEntityRand",
-    "rng.MixinLevelRand"
+    "rng.MixinExplosionRand",
+    "rng.MixinItemEntityRendererRand",
+    "rng.MixinItemRand",
+    "rng.MixinItemScattererRand",
+    "rng.MixinMathHelperRand",
+    "rng.MixinMinecraftServerRand",
+    "rng.MixinRaidRand",
+    "rng.MixinSensorRand",
+    "rng.MixinWanderingTraderManagerRand",
+    "rng.MixinWeightedListRand",
+    "rng.MixinWorldRand",
+    "rng.MixinZombieVillagerTypeRand"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -18,6 +31,17 @@
     "oper.MixinCamera",
     "oper.MixinKeyboardHandler",
     "oper.MixinMinecraftClient",
-    "rng.MixinFontSetRand"
+    "rng.MixinClientParticlesRand",
+    "rng.MixinEnchantmentScreenRand",
+    "rng.MixinEndermanRendererRand",
+    "rng.MixinFontStorageRand",
+    "rng.MixinGameRendererRand",
+    "rng.MixinMusicTrackerRand",
+    "rng.MixinParticleManagerRand",
+    "rng.MixinParticleRand",
+    "rng.MixinSpellParticleRand",
+    "rng.MixinSplashTextRand",
+    "rng.MixinTextRendererRand",
+    "rng.MixinWeightedSoundSetRand"
   ]
 }
