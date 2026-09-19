@@ -7,7 +7,6 @@
     "rng.common.MixinDispenserRand",
     "rng.common.MixinEnchantingTableRand",
     "rng.common.MixinEnderDragonSpawnStateRand",
-    "rng.common.MixinEntityAttributeModifierRand",
     "rng.common.MixinEntityRand",
     "rng.common.MixinEntitySelectorReaderRand",
     "rng.common.MixinExplosionRand",

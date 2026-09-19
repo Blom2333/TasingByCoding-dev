@@ -1,6 +1,7 @@
 package com.minecrafttas.tbc.mixin.rng.common;
 
 import com.minecrafttas.tbc.rng.RandomManager;
+import com.minecrafttas.tbc.rng.RandomTypes;
 import net.minecraft.entity.ai.brain.task.WanderIndoorsTask;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,6 +23,6 @@ public class MixinWanderIndoorsTaskRand {
     @Redirect(method = "run(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/mob/PathAwareEntity;J)V",
             at = @At(value = "INVOKE", target = "Ljava/util/Collections;shuffle(Ljava/util/List;)V"))
     private void redirectShuffle(List<BlockPos> list) {
-        Collections.shuffle(list, new RandomManager());
+        Collections.shuffle(list, RandomManager.create(RandomTypes.WANDER_INDOORS_TASK));
     }
 }

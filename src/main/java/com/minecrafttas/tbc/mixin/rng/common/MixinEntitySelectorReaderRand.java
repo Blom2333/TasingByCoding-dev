@@ -1,6 +1,7 @@
 package com.minecrafttas.tbc.mixin.rng.common;
 
 import com.minecrafttas.tbc.rng.RandomManager;
+import com.minecrafttas.tbc.rng.RandomTypes;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
@@ -29,6 +30,6 @@ public class MixinEntitySelectorReaderRand {
 
     @Inject(method = "<clinit>", at = @At("TAIL"))
     private static void replaceRandomShuffle(CallbackInfo ci) {
-        RANDOM = (vec3d, list) -> Collections.shuffle(list, new RandomManager());
+        RANDOM = (vec3d, list) -> Collections.shuffle(list, RandomManager.create(RandomTypes.ENTITY_SELECTOR));
     }
 }

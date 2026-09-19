@@ -2,6 +2,7 @@ package com.minecrafttas.tbc.mixin.rng.common;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.minecrafttas.tbc.rng.RandomManager;
+import com.minecrafttas.tbc.rng.RandomTypes;
 import net.minecraft.world.gen.GeneratorOptions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,16 +23,16 @@ import java.util.Random;
 public class MixinGeneratorOptionsRand {
     @ModifyExpressionValue(method = "getDefaultOptions", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     private static Random modifyDefaultOptionsRandom(Random original) {
-        return new RandomManager();
+        return RandomManager.create(RandomTypes.GENERATOR_OPTIONS_DEFAULT);
     }
 
     @ModifyExpressionValue(method = "getChunkGenerator", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     public Random modifyChunkGeneratorRandom(Random original) {
-        return new RandomManager();
+        return RandomManager.create(RandomTypes.GENERATOR_OPTIONS_CHUNK_GENERATOR);
     }
 
     @ModifyExpressionValue(method = "fromProperties", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     private static Random modifyFromPropertiesRandom(Random original) {
-        return new RandomManager();
+        return RandomManager.create(RandomTypes.GENERATOR_OPTIONS_FROM_PROPERTIES);
     }
 }

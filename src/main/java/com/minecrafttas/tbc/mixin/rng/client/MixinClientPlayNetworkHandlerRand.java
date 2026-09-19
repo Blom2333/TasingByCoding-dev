@@ -1,6 +1,7 @@
 package com.minecrafttas.tbc.mixin.rng.client;
 
 import com.minecrafttas.tbc.rng.RandomManager;
+import com.minecrafttas.tbc.rng.RandomTypes;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -21,6 +22,6 @@ import java.util.List;
 public class MixinClientPlayNetworkHandlerRand {
     @Redirect(method = "onGameJoin", at = @At(value = "INVOKE", target = "Ljava/util/Collections;shuffle(Ljava/util/List;)V"))
     private void redirectDimensionShuffle(List<RegistryKey<World>> list) {
-        Collections.shuffle(list, new RandomManager());
+        Collections.shuffle(list, RandomManager.create(RandomTypes.CLIENT_PLAY_NETWORK_HANDLER_GAME_JOIN_SHUFFLE));
     }
 }

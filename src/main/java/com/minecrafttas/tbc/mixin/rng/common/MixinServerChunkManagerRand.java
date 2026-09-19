@@ -1,6 +1,7 @@
 package com.minecrafttas.tbc.mixin.rng.common;
 
 import com.minecrafttas.tbc.rng.RandomManager;
+import com.minecrafttas.tbc.rng.RandomTypes;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerChunkManager;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,6 +22,6 @@ import java.util.List;
 public class MixinServerChunkManagerRand {
     @Redirect(method = "tickChunks", at = @At(value = "INVOKE", target = "Ljava/util/Collections;shuffle(Ljava/util/List;)V"))
     private void redirectShuffle(List<ChunkHolder> list) {
-        Collections.shuffle(list, new RandomManager());
+        Collections.shuffle(list, RandomManager.create(RandomTypes.SERVER_CHUNK_MANAGER_TICK_SHUFFLE));
     }
 }

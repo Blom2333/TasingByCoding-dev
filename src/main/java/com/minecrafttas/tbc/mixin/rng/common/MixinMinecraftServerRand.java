@@ -2,6 +2,7 @@ package com.minecrafttas.tbc.mixin.rng.common;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.minecrafttas.tbc.rng.RandomManager;
+import com.minecrafttas.tbc.rng.RandomTypes;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,16 +27,16 @@ import java.util.Random;
 public class MixinMinecraftServerRand {
     @ModifyExpressionValue(method = "<init>", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     public Random modifyRandom(Random original) {
-        return new RandomManager();
+        return RandomManager.create(RandomTypes.MINECRAFT_SERVER);
     }
 
     @ModifyExpressionValue(method = "createWorlds", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     public Random modifyCreateWorldsRandom(Random original) {
-        return new RandomManager();
+        return RandomManager.create(RandomTypes.MINECRAFT_SERVER_SEED);
     }
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Collections;shuffle(Ljava/util/List;)V"))
     private void redirectPlayerSampleShuffle(List<GameProfile> list) {
-        Collections.shuffle(list, new RandomManager());
+        Collections.shuffle(list, RandomManager.create(RandomTypes.MINECRAFT_SERVER_PLAYER_SAMPLE));
     }
 }
