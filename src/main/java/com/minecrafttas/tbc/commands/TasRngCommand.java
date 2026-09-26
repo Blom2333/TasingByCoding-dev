@@ -1,7 +1,6 @@
 package com.minecrafttas.tbc.commands;
 
 import com.minecrafttas.tbc.TasCommand;
-import com.minecrafttas.tbc.rng.RandomManager;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -19,16 +18,16 @@ public class TasRngCommand {
     }
 
     private static void registerGlobal() {
-        builder.then(CommandManager.literal("global")
-                   .then(CommandManager.literal("set")
-                       .then(CommandManager.argument("from", IntegerArgumentType.integer(1))
-                           .then(CommandManager.argument("to", IntegerArgumentType.integer(1))
-                               .then(CommandManager.argument("value", IntegerArgumentType.integer())
-                                   .executes(TasRngCommand::setRngInRange)))))
-                   .then(CommandManager.literal("lock")
-                       .executes(context -> unlockRng())
-                       .then(CommandManager.argument("value", IntegerArgumentType.integer())
-                           .executes(TasRngCommand::lockRng))));
+//        builder.then(CommandManager.literal("global")
+//                   .then(CommandManager.literal("set")
+//                       .then(CommandManager.argument("from", IntegerArgumentType.integer(1))
+//                           .then(CommandManager.argument("to", IntegerArgumentType.integer(1))
+//                               .then(CommandManager.argument("value", IntegerArgumentType.integer())
+//                                   .executes(TasRngCommand::setRngInRange)))))
+//                   .then(CommandManager.literal("lock")
+//                       .executes(context -> unlockRng())
+//                       .then(CommandManager.argument("value", IntegerArgumentType.integer())
+//                           .executes(TasRngCommand::lockRng))));
     }
 
     private static void registerRule() {
@@ -48,15 +47,15 @@ public class TasRngCommand {
         return 1;
     }
 
-    private static int lockRng(CommandContext<ServerCommandSource> context) {
-        RandomManager.setValue(IntegerArgumentType.getInteger(context, "value"));
-        RandomManager.setLocked(true);
-        return 1;
-    }
-
-    private static int unlockRng() {
-        RandomManager.setLocked(false);
-        return 1;
-    }
+//    private static int lockRng(CommandContext<ServerCommandSource> context) {
+//        RandomManager.setValue(IntegerArgumentType.getInteger(context, "value"));
+//        RandomManager.setLocked(true);
+//        return 1;
+//    }
+//
+//    private static int unlockRng() {
+//        RandomManager.setLocked(false);
+//        return 1;
+//    }
 }
 // tas rng block/entity/world/rule/next pos/selector/(drop/summon)/(num/lock) ...

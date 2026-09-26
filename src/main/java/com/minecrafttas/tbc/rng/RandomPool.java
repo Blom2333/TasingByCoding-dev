@@ -5,15 +5,16 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class RandomPool {
-    public static final Map<RandomTypes, RandomPool> POOLS = new HashMap<>();
+    public static final Map<RandomTypes, RandomPool> POOLS = new ConcurrentHashMap<>();
 
     protected final Map<Long, Entry> registry = new ConcurrentHashMap<>();
     protected final ReferenceQueue<RandomManager> queue = new ReferenceQueue<>();
-    public int randomId = 0;
-    public int ops = 0;
+    public final AtomicInteger randomId = new AtomicInteger();
+    public final AtomicInteger ops = new AtomicInteger();
 
     public RandomPool() {}
 
