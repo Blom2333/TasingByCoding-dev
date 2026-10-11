@@ -109,16 +109,18 @@ public class OperMacros {
         }
     }
 
-    public static float smoothLerp(float a, float b, float t, boolean adjustRotDirection) {
-        if (adjustRotDirection) {
-            float diff = a - b;
-            if (diff <= -180) {
-                a += 360;
-            } else if (diff > 180) {
-                b += 360;
-            }
-        }
+    private static float rotationLerp(float a, float b, float t) {
         return (float) MathHelper.lerp(MathHelper.perlinFade(t), a, b);
+    }
+
+    private static float rotationLerpWithAdjust(float a, float b, float t) {
+        float diff = a - b;
+        if (diff <= -180) {
+            a += 360;
+        } else if (diff > 180) {
+            b += 360;
+        }
+        return rotationLerp(a, b, t);
     }
 
     public static Vec2f getAngleLerp() {
@@ -127,8 +129,8 @@ public class OperMacros {
         if (lerpDelay == defaultDelay) return new Vec2f(clientRot.x, clientRot.y);
         float t = (lerpDelay + MinecraftClient.getInstance().getTickDelta()) / defaultDelay;
         return new Vec2f(
-                smoothLerp(lastPitchRot, clientRot.x, t, false),
-                smoothLerp(lastYawRot, clientRot.y, t, true)
+                rotationLerp(lastPitchRot, clientRot.x, t),
+                rotationLerpWithAdjust(lastYawRot, clientRot.y, t)
         );
     }
 }

@@ -20,22 +20,22 @@ import java.util.Random;
  * Mixin requires handlers for static targets to be private static.
  *
  * <p>All three sites are VOLATILE, so each of them has exactly one instance for the whole run
- * ({@link RandomManager#site(RandomTypes)}).
+ * ({@link RandomManager#createSite(RandomTypes)}).
  */
 @Mixin(GeneratorOptions.class)
 public class MixinGeneratorOptionsRand {
     @ModifyExpressionValue(method = "getDefaultOptions", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     private static Random modifyDefaultOptionsRandom(Random original) {
-        return RandomManager.site(RandomTypes.GENERATOR_OPTIONS_DEFAULT);
+        return RandomManager.createSite(RandomTypes.GENERATOR_OPTIONS_DEFAULT);
     }
 
     @ModifyExpressionValue(method = "getChunkGenerator", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     public Random modifyChunkGeneratorRandom(Random original) {
-        return RandomManager.site(RandomTypes.GENERATOR_OPTIONS_CHUNK_GENERATOR);
+        return RandomManager.createSite(RandomTypes.GENERATOR_OPTIONS_CHUNK_GENERATOR);
     }
 
     @ModifyExpressionValue(method = "fromProperties", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     private static Random modifyFromPropertiesRandom(Random original) {
-        return RandomManager.site(RandomTypes.GENERATOR_OPTIONS_FROM_PROPERTIES);
+        return RandomManager.createSite(RandomTypes.GENERATOR_OPTIONS_FROM_PROPERTIES);
     }
 }

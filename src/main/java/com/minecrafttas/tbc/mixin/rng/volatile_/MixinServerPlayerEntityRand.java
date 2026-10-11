@@ -14,12 +14,12 @@ import java.util.Random;
  * which decides where a player is placed inside the spawn radius.
  *
  * <p>The site is VOLATILE, so every player draws from the one shared instance of the site
- * ({@link RandomManager#site(RandomTypes)}).
+ * ({@link RandomManager#createSite(RandomTypes)}).
  */
 @Mixin(ServerPlayerEntity.class)
 public class MixinServerPlayerEntityRand {
     @ModifyExpressionValue(method = "moveToSpawn", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     public Random modifyRandom(Random original) {
-        return RandomManager.site(RandomTypes.SERVER_PLAYER_ENTITY_SPAWN_OFFSET);
+        return RandomManager.createSite(RandomTypes.SERVER_PLAYER_ENTITY_SPAWN_OFFSET);
     }
 }

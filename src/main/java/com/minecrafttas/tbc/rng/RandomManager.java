@@ -6,29 +6,20 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A {@link Random} that stays addressable, so a TAS tool can find, seed, lock or manipulate it later.
+ * A {@link Random} that stays addressable, so a TAS tool can find, seed, lock or manipulate it.
  * Instances are handed out by {@link #create(RandomTypes)} for sites that own one Random per object or per
- * call, and by {@link #site(RandomTypes)} for sites that only ever have a single one.
+ * call, and by {@link #createSite(RandomTypes)} for sites that only ever have a single one.
  */
 public class RandomManager extends Random {
 
-    /** The one instance of every VOLATILE site, see {@link #site(RandomTypes)} */
+    /** The one instance of every VOLATILE site, see {@link #createSite(RandomTypes)} */
     private static final Map<RandomTypes, RandomManager> SITES = new ConcurrentHashMap<>();
 
     /**
      * The instance behind every replaced argument-less {@code Collections.shuffle(list)}. It is the shared
      * instance of {@link RandomTypes#SHUFFLE}, vanilla also uses one static Random for all of those sites.
      */
-    public static final RandomManager COLLECTIONS_RANDOM = site(RandomTypes.SHUFFLE);
-
-//    @Setter private static boolean locked = false;
-//    @Setter private static int value;
-
-//    public enum Stability {
-//        STABLE,
-//        SESSION,
-//        VOLATILE
-//    }
+    public static final RandomManager COLLECTIONS_RANDOM = createSite(RandomTypes.SHUFFLE);
 
     @Getter private final long id;
 
@@ -42,27 +33,42 @@ public class RandomManager extends Random {
      * not folded into it yet, see {@link RandomTypes#getSalt()}.
      */
     private static long seedOf(RandomTypes type, long id) {
-        return ((id & 0xFFFFL) << 32) | (type.getName().hashCode() & 0xFFFFFFFFL);
+        long seed = id * 0x9E3779B97F4A7C15L + type.getSalt();
+        seed ^= (seed >>> 33);
+        seed *= 0xff51afd7ed558ccdL;
+        seed ^= (seed >>> 33);
+        return seed;
     }
 
     /**
      * Creates the next instance of a site that owns one Random per object or per call, so every call returns
      * a new instance with its own stream. Sites that have a single instance for their whole life must use
-     * {@link #site(RandomTypes)} instead, otherwise they become one instance per call again.
-     *
-     * @throws IllegalArgumentException if the type is VOLATILE, those sites must stay at one instance
+     * {@link #createSite(RandomTypes)} instead, otherwise they become one instance per call again.
      */
     public static RandomManager create(RandomTypes type) {
         if (type.getStability() == RandomTypes.Stability.VOLATILE) {
-            throw new IllegalArgumentException("RandomManager.create() must not be used for the VOLATILE site "
-                    + type + " - it has exactly one instance, use site() instead");
+            throw new IllegalArgumentException("RandomManager.create() must not be used for the VOLATILE site");
         }
         return newInstance(type);
     }
 
+    /**
+     * The one and only instance of a {@link RandomTypes.Stability#VOLATILE} site. Vanilla creates a new
+     * Random on every call there, which is neither reproducible nor addressable, so every call of that site
+     * shares this instance instead: the stream is continuous, deterministic in call order, and a command can
+     * seed or lock the whole site at once.
+     */
+    public static RandomManager createSite(RandomTypes type) {
+        if (type.getStability() != RandomTypes.Stability.VOLATILE) {
+            throw new IllegalArgumentException("RandomManager.site() only serves VOLATILE sites");
+        }
+        RandomManager r = SITES.get(type);
+        return r != null ? r : site(type);
+    }
+
     /** Creates one instance of a site and registers it in the pool of that site */
     private static RandomManager newInstance(RandomTypes type) {
-        RandomPool pool = poolOf(type);
+        RandomPool pool = RandomPool.POOLS.computeIfAbsent(type, t -> new RandomPool());
 
         long id = pool.randomId.getAndIncrement();
         RandomManager r = new RandomManager(type, id);
@@ -72,35 +78,14 @@ public class RandomManager extends Random {
         return r;
     }
 
-    /**
-     * The one and only instance of a {@link RandomTypes.Stability#VOLATILE} site. Vanilla creates a new
-     * Random on every call there, which is neither reproducible nor addressable, so every call of that site
-     * shares this instance instead: the stream is continuous, deterministic in call order, and a command can
-     * seed or lock the whole site at once.
-     *
-     * @throws IllegalArgumentException if the type is not VOLATILE, those sites need {@link #create(RandomTypes)}
-     */
-    public static RandomManager site(RandomTypes type) {
-        if (type.getStability() != RandomTypes.Stability.VOLATILE) {
-            throw new IllegalArgumentException("RandomManager.site() only serves VOLATILE sites, " + type
-                    + " is " + type.getStability() + " - use create() instead");
-        }
-        RandomManager r = SITES.get(type);
-        return r != null ? r : createSite(type);
-    }
-
     /** Creates the shared instance of a site exactly once, even if several threads ask for it at the same time */
-    private static synchronized RandomManager createSite(RandomTypes type) {
+    private static synchronized RandomManager site(RandomTypes type) {
         RandomManager r = SITES.get(type);
         if (r == null) {
             r = newInstance(type);
             SITES.put(type, r);
         }
         return r;
-    }
-
-    private static RandomPool poolOf(RandomTypes type) {
-        return RandomPool.POOLS.computeIfAbsent(type, t -> new RandomPool());
     }
 
 //    @Override

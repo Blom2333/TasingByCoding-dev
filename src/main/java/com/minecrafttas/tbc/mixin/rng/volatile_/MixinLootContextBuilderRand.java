@@ -15,12 +15,12 @@ import java.util.Random;
  * {@code new Random()} - which is the only unseeded Random of the loot system.
  *
  * <p>The fallback is VOLATILE, so every context without a seed draws from the one shared instance of the
- * site ({@link RandomManager#site(RandomTypes)}).
+ * site ({@link RandomManager#createSite(RandomTypes)}).
  */
 @Mixin(LootContext.Builder.class)
 public class MixinLootContextBuilderRand {
     @ModifyExpressionValue(method = "build", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     public Random modifyRandom(Random original) {
-        return RandomManager.site(RandomTypes.LOOT_CONTEXT);
+        return RandomManager.createSite(RandomTypes.LOOT_CONTEXT);
     }
 }

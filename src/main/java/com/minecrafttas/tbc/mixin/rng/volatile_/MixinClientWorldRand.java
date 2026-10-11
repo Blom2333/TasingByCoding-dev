@@ -14,12 +14,12 @@ import java.util.Random;
  * structure void, ...) that are rendered while holding one.
  *
  * <p>The method runs on every client tick and the site is VOLATILE, so all calls share the one instance of
- * the site ({@link RandomManager#site(RandomTypes)}), which keeps the sequence continuous.
+ * the site ({@link RandomManager#createSite(RandomTypes)}), which keeps the sequence continuous.
  */
 @Mixin(ClientWorld.class)
 public class MixinClientWorldRand {
     @ModifyExpressionValue(method = "doRandomBlockDisplayTicks", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     public Random modifyRandom(Random original) {
-        return RandomManager.site(RandomTypes.CLIENT_WORLD_BLOCK_DISPLAY);
+        return RandomManager.createSite(RandomTypes.CLIENT_WORLD_BLOCK_DISPLAY);
     }
 }

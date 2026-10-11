@@ -16,12 +16,12 @@ import java.util.Random;
  * {@code EnderDragonSpawnState.run} (intermediary {@code method_12507}).
  *
  * <p>The site is VOLATILE, so every pillar regeneration shares the one instance of the site
- * ({@link RandomManager#site(RandomTypes)}) instead of getting a fresh unseeded Random.
+ * ({@link RandomManager#createSite(RandomTypes)}) instead of getting a fresh unseeded Random.
  */
 @Mixin(targets = "net.minecraft.entity.boss.dragon.EnderDragonSpawnState$3")
 public class MixinEnderDragonSpawnStateRand {
     @ModifyExpressionValue(method = "run", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     public Random modifyRandom(Random original) {
-        return RandomManager.site(RandomTypes.ENDER_DRAGON_SPAWN_PILLARS);
+        return RandomManager.createSite(RandomTypes.ENDER_DRAGON_SPAWN_PILLARS);
     }
 }

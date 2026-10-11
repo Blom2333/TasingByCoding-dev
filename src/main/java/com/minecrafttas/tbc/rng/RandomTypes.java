@@ -12,7 +12,7 @@ import lombok.Getter;
  *     <li>{@link Stability#SESSION} - the amount depends on the session, so a single instance is addressed
  *     through the instance counter of its pool</li>
  *     <li>{@link Stability#VOLATILE} - vanilla creates a new instance per call, so the whole site is always
- *     served by one shared instance, see {@link RandomManager#site(RandomTypes)}</li>
+ *     served by one shared instance, see {@link RandomManager#createSite(RandomTypes)}</li>
  * </ul>
  *
  * <p>Each constant also carries:
@@ -61,7 +61,7 @@ public enum RandomTypes {
     // ------------------------------------------------------------------ SESSION
 
     /** One instance per entity, handed out in entity construction order */
-    ENTITY("Entity", Stability.SESSION, 0x17),
+//    ENTITY("Entity", Stability.SESSION, 0x17),
     EXPLOSION("Explosion", Stability.SESSION, 0x18),
     RAID("Raid", Stability.SESSION, 0x19),
     WEIGHTED_LIST("WeightedList", Stability.SESSION, 0x1A),

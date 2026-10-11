@@ -13,12 +13,12 @@ import org.spongepowered.asm.mixin.injection.At;
  * replaced, the position based seed is left untouched.
  *
  * <p>The site is VOLATILE, so the stand-in for the wall clock comes from the one shared instance of the site
- * ({@link RandomManager#site(RandomTypes)}): a deterministic pseudo clock instead of the real one.
+ * ({@link RandomManager#createSite(RandomTypes)}): a deterministic pseudo clock instead of the real one.
  */
 @Mixin(StructurePlacementData.class)
 public class MixinStructurePlacementDataRand {
     @ModifyExpressionValue(method = "getRandom", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"))
     private long modifyTimeSeed(long original) {
-        return RandomManager.site(RandomTypes.STRUCTURE_PLACEMENT_SEED).nextLong();
+        return RandomManager.createSite(RandomTypes.STRUCTURE_PLACEMENT_SEED).nextLong();
     }
 }

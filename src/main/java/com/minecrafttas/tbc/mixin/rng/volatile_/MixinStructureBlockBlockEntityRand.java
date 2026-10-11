@@ -13,12 +13,12 @@ import org.spongepowered.asm.mixin.injection.At;
  * replaced; a seed explicitly set in the block still wins.
  *
  * <p>The site is VOLATILE, so the stand-in for the wall clock comes from the one shared instance of the site
- * ({@link RandomManager#site(RandomTypes)}): a deterministic pseudo clock instead of the real one.
+ * ({@link RandomManager#createSite(RandomTypes)}): a deterministic pseudo clock instead of the real one.
  */
 @Mixin(StructureBlockBlockEntity.class)
 public class MixinStructureBlockBlockEntityRand {
     @ModifyExpressionValue(method = "createRandom", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Util;getMeasuringTimeMs()J"))
     private static long modifyTimeSeed(long original) {
-        return RandomManager.site(RandomTypes.STRUCTURE_BLOCK_SEED).nextLong();
+        return RandomManager.createSite(RandomTypes.STRUCTURE_BLOCK_SEED).nextLong();
     }
 }

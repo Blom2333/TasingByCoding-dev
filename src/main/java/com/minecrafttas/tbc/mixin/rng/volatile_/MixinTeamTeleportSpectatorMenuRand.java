@@ -15,12 +15,12 @@ import java.util.Random;
  * A constructor name never needs remapping.
  *
  * <p>The site is VOLATILE: every command object draws its skin from the one shared instance of the site
- * ({@link RandomManager#site(RandomTypes)}).
+ * ({@link RandomManager#createSite(RandomTypes)}).
  */
 @Mixin(targets = "net.minecraft.client.gui.hud.spectator.TeamTeleportSpectatorMenu$TeleportToSpecificTeamCommand")
 public class MixinTeamTeleportSpectatorMenuRand {
     @ModifyExpressionValue(method = "<init>", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     public Random modifyRandom(Random original) {
-        return RandomManager.site(RandomTypes.TEAM_TELEPORT_SPECTATOR_MENU);
+        return RandomManager.createSite(RandomTypes.TEAM_TELEPORT_SPECTATOR_MENU);
     }
 }

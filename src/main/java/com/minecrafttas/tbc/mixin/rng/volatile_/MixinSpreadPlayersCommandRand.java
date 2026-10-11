@@ -14,12 +14,12 @@ import java.util.Random;
  * {@code execute} is static, so the handler has to be private static as well.
  *
  * <p>The site is VOLATILE: consecutive commands continue the one shared instance of the site
- * ({@link RandomManager#site(RandomTypes)}).
+ * ({@link RandomManager#createSite(RandomTypes)}).
  */
 @Mixin(SpreadPlayersCommand.class)
 public class MixinSpreadPlayersCommandRand {
     @ModifyExpressionValue(method = "execute", at = @At(value = "NEW", target = "Ljava/util/Random;"))
     private static Random modifyRandom(Random original) {
-        return RandomManager.site(RandomTypes.SPREAD_PLAYERS_COMMAND);
+        return RandomManager.createSite(RandomTypes.SPREAD_PLAYERS_COMMAND);
     }
 }
